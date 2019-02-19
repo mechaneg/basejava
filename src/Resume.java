@@ -6,11 +6,11 @@ public class Resume {
     // Unique identifier
     private String uuid;
 
-    String getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    void setUuid(String newUuid) {
+    public void setUuid(String newUuid) {
         uuid = newUuid;
     }
 

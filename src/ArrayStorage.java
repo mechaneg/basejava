@@ -17,16 +17,14 @@ public class ArrayStorage {
     public void save(Resume resume) {
         if (resume == null) {
             System.out.println("Unable to save null resume");
-        }
-        if (findPosition(resume.getUuid()) != -1) {
+        } else if (findPosition(resume.getUuid()) != -1) {
             System.out.println("Save: resume with uuid '" + resume.getUuid() + "' already exists");
-        }
-        if (curSize == MAX_SIZE) {
+        } else if (curSize == MAX_SIZE) {
             System.out.println("Reached max size of array storage");
+        } else {
+            storage[curSize] = resume;
+            curSize++;
         }
-
-        storage[curSize] = resume;
-        curSize++;
     }
 
     public Resume get(String uuid) {
