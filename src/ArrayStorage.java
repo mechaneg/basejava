@@ -5,7 +5,7 @@ import java.util.Arrays;
  */
 public class ArrayStorage {
 
-    private static final int MAX_SIZE = 10000;
+    private static final int MAX_SIZE = 10_000;
     private Resume[] storage = new Resume[MAX_SIZE];
     private int curSize = 0;
 
