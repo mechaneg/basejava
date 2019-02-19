@@ -9,12 +9,6 @@ public class ArrayStorage {
     private Resume[] storage = new Resume[MAX_SIZE];
     private int curSize = 0;
 
-    private boolean isInStorage(String uuid) {
-        return Arrays.stream(storage, 0, curSize).anyMatch(
-            element -> element.uuid.equals(uuid)
-        );
-    }
-
     public void clear() {
         Arrays.fill(storage, 0, curSize, null);
         curSize = 0;
@@ -22,13 +16,13 @@ public class ArrayStorage {
 
     public void save(Resume resume) {
         if (resume == null) {
-            throw new IllegalArgumentException("resume is null");
+            System.out.println("Unable to save null resume");
         }
-        if (isInStorage(resume.uuid)) {
-            throw new DuplicateElementException();
+        if (findPosition(resume.getUuid()) != -1) {
+            System.out.println("Save: resume with uuid '" + resume.getUuid() + "' already exists");
         }
         if (curSize == MAX_SIZE) {
-            throw new StorageOverflowException();
+            System.out.println("Reached max size of array storage");
         }
 
         storage[curSize] = resume;
@@ -36,34 +30,33 @@ public class ArrayStorage {
     }
 
     public Resume get(String uuid) {
-        for (int i = 0; i < curSize; i++) {
-            if (storage[i].uuid.equals(uuid)) {
-                return storage[i];
-            }
+        int resumePos = findPosition(uuid);
+        if (resumePos == -1) {
+            System.out.println("Get: resume with uuid '" + uuid + "' doesn't exist");
+            return null;
+        } else {
+            return storage[resumePos];
         }
-        throw new AbsentElementException();
     }
 
     public void delete(String uuid) {
-        for (int i = 0; i < curSize; i++) {
-            if (storage[i].uuid.equals(uuid)) {
-                storage[i] = storage[curSize - 1];
-                storage[curSize - 1] = null;
-                curSize--;
-                return;
-            }
+        int resumePos = findPosition(uuid);
+        if (resumePos == -1) {
+            System.out.println("Delete: resume with uuid '" + uuid + "' doesn't exist");
+        } else {
+            storage[resumePos] = storage[curSize - 1];
+            storage[curSize - 1] = null;
+            curSize--;
         }
-        throw new AbsentElementException();
     }
 
     public void update(Resume resume) {
-        for (int i = 0; i < curSize; i++) {
-            if (storage[i].uuid.equals(resume.uuid)) {
-                storage[i] = resume;
-                return;
-            }
+        int resumePos = findPosition(resume.getUuid());
+        if (resumePos == -1) {
+            System.out.println("Update: resume with uuid '" + resume.getUuid() + "' doesn't exist");
+        } else {
+            storage[resumePos] = resume;
         }
-        throw new AbsentElementException();
     }
 
     /**
@@ -78,9 +71,15 @@ public class ArrayStorage {
     }
 
     /**
-     * ArrayStorage specific exceptions
+     * Finds storage position of corresponding resume with this uuid.
+     * If there is no such resume returns -1.
      */
-    public class StorageOverflowException extends RuntimeException {}
-    public class DuplicateElementException extends RuntimeException {}
-    public class AbsentElementException extends RuntimeException {}
+    private int findPosition(String uuid) {
+        for (int i = 0; i < curSize; i++) {
+            if (storage[i].getUuid().equals(uuid)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
