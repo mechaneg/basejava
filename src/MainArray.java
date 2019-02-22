@@ -1,17 +1,20 @@
+import ru.mechaneg.basejava.model.Resume;
+import ru.mechaneg.basejava.storage.ArrayStorage;
+import ru.mechaneg.basejava.storage.IStorage;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Interactive test for ArrayStorage implementation
+ * Interactive test for ru.mechaneg.basejava.storage.ArrayStorage implementation
  * (just run, no need to understand)
  */
 public class MainArray {
-    private final static ArrayStorage ARRAY_STORAGE = new ArrayStorage();
+    private final static IStorage ARRAY_STORAGE = new ArrayStorage();
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        Resume r;
         while (true) {
             System.out.print("Введите одну из команд - (list | save uuid | delete uuid | get uuid | update uuid | clear | exit): ");
             String[] params = reader.readLine().trim().toLowerCase().split(" ");
@@ -31,9 +34,7 @@ public class MainArray {
                     System.out.println(ARRAY_STORAGE.size());
                     break;
                 case "save":
-                    r = new Resume();
-                    r.setUuid(uuid);
-                    ARRAY_STORAGE.save(r);
+                    ARRAY_STORAGE.save(new Resume(uuid));
                     printAll();
                     break;
                 case "delete":
@@ -44,9 +45,7 @@ public class MainArray {
                     System.out.println(ARRAY_STORAGE.get(uuid));
                     break;
                 case "update":
-                    r = new Resume();
-                    r.setUuid(uuid);
-                    ARRAY_STORAGE.update(r);
+                    ARRAY_STORAGE.update(new Resume(uuid));
                     printAll();
                     break;
                 case "clear":
