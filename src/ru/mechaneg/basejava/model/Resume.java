@@ -1,5 +1,7 @@
 package ru.mechaneg.basejava.model;
 
+import java.util.Objects;
+
 /**
  * Initial resume class
  */
@@ -8,7 +10,8 @@ public class Resume implements Comparable<Resume> {
     // Unique identifier
     private String uuid;
 
-    public Resume() {}
+    public Resume() {
+    }
 
     public Resume(String uuid) {
         this.uuid = uuid;
@@ -28,16 +31,16 @@ public class Resume implements Comparable<Resume> {
     }
 
     @Override
-    public boolean equals(Object rhs) {
-        if (this == rhs) {
-            return true;
-        }
-        if (rhs == null) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Resume resume = (Resume) o;
+        return Objects.equals(uuid, resume.uuid);
+    }
 
-        Resume rhsResume = (Resume) rhs;
-        return this.uuid.equals(rhsResume.uuid);
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
     }
 
     @Override
