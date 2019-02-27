@@ -2,10 +2,6 @@ package ru.mechaneg.basejava.storage;
 
 public class ArrayStorage extends AbstractArrayStorage {
 
-    /**
-     * Complexity:
-     * O(N)
-     */
     @Override
     protected int findPosition(String uuid) {
         for (int i = 0; i < curSize; i++) {
@@ -16,19 +12,11 @@ public class ArrayStorage extends AbstractArrayStorage {
         return -1;
     }
 
-    /**
-     * Complexity:
-     * O(1)
-     */
     @Override
     protected void deleteAtPosition(int position) {
         storage[position] = storage[curSize - 1];
     }
 
-    /**
-     * Complexity:
-     * O(1)
-     */
     @Override
     protected int prepareToInsert(int position) {
         assert position < 0;
