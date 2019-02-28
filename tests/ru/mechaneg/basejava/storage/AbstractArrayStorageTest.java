@@ -80,7 +80,7 @@ public abstract class AbstractArrayStorageTest {
     public void delete() {
         storage.delete(UUID_1);
         assertEquals(storage.size(), 1);
-        storage.get(UUID);
+        storage.get(UUID_1);
     }
 
     @Test(expected = NotExistStorageException.class)
