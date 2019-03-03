@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public abstract class AbstractArrayStorage implements IStorage {
+public abstract class AbstractArrayStorage extends AbstractStorage {
     protected static final int MAX_SIZE = 10_000;
     protected Resume[] storage = new Resume[MAX_SIZE];
     protected int curSize = 0;
@@ -25,6 +25,7 @@ public abstract class AbstractArrayStorage implements IStorage {
 
     protected abstract int prepareToInsert(int position);
 
+    @Override
     public void save(Resume resume) {
         if (resume == null) {
             System.out.println("Unable to save null resume");
@@ -46,6 +47,7 @@ public abstract class AbstractArrayStorage implements IStorage {
         curSize++;
     }
 
+    @Override
     public void delete(String uuid) {
         int resumePos = findPosition(uuid);
         if (resumePos < 0) {
@@ -58,11 +60,13 @@ public abstract class AbstractArrayStorage implements IStorage {
         curSize--;
     }
 
+    @Override
     public void clear() {
         Arrays.fill(storage, 0, curSize, null);
         curSize = 0;
     }
 
+    @Override
     public Resume get(String uuid) {
         int resumePos = findPosition(uuid);
         if (resumePos < 0) {
@@ -71,6 +75,7 @@ public abstract class AbstractArrayStorage implements IStorage {
         return storage[resumePos];
     }
 
+    @Override
     public void update(Resume resume) {
         int resumePos = findPosition(resume.getUuid());
         if (resumePos < 0) {
@@ -79,10 +84,12 @@ public abstract class AbstractArrayStorage implements IStorage {
         storage[resumePos] = resume;
     }
 
+    @Override
     public Resume[] getAll() {
         return Arrays.copyOf(storage, curSize);
     }
 
+    @Override
     public int size() {
         return curSize;
     }
