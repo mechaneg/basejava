@@ -16,21 +16,14 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void deleteAtPosition(int position) {
-        System.arraycopy(storage, position + 1, storage, position, curSize - position - 1);
-        storage[curSize - 1] = null;
-        curSize--;
+    protected int prepareToInsert(int position) {
+        position = -(position + 1);
+        System.arraycopy(storage, position, storage, position + 1, curSize - position);
+        return position;
     }
 
     @Override
-    protected int prepareToInsert(int position) {
-        assert position < 0;
-        assert curSize < MAX_SIZE;
-
-        position = -(position + 1);
-
-        System.arraycopy(storage, position, storage, position + 1, curSize - position);
-
-        return position;
+    protected void doDeleteAtPosition(int position) {
+        System.arraycopy(storage, position + 1, storage, position, curSize - position - 1);
     }
 }

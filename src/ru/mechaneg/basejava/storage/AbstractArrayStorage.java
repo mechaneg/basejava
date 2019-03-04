@@ -1,6 +1,5 @@
 package ru.mechaneg.basejava.storage;
 
-import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.exception.StorageOverflowException;
 import ru.mechaneg.basejava.model.Resume;
 
@@ -17,39 +16,41 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     protected abstract int prepareToInsert(int position);
 
+    protected abstract void doDeleteAtPosition(int position);
+
     @Override
-    protected void updateElementInStorage(int position, Resume resume) {
+    protected Resume getAtPosition(int position) {
+        return storage[position];
+    }
+
+    @Override
+    protected void updateAtPosition(int position, Resume resume) {
         storage[position] = resume;
     }
 
     @Override
-    protected void addNewElementToStorage(int insertPosition, Resume resume) {
-        insertPosition = prepareToInsert(insertPosition);
+    protected void addNewAtPosition(int position, Resume resume) {
+        if (curSize == MAX_SIZE) {
+            throw new StorageOverflowException(resume.getUuid());
+        }
 
-        storage[insertPosition] = resume;
+        position = prepareToInsert(position);
+
+        storage[position] = resume;
         curSize++;
     }
 
     @Override
-    protected void checkOverflow(String uuidOfResumeToAdd) {
-        if (curSize == MAX_SIZE) {
-            throw new StorageOverflowException(uuidOfResumeToAdd);
-        }
+    protected void deleteAtPosition(int position) {
+        doDeleteAtPosition(position);
+        storage[curSize - 1] = null;
+        curSize--;
     }
 
     @Override
     public void clear() {
         Arrays.fill(storage, 0, curSize, null);
         curSize = 0;
-    }
-
-    @Override
-    public Resume get(String uuid) {
-        int resumePos = findPosition(uuid);
-        if (resumePos < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        return storage[resumePos];
     }
 
     @Override

@@ -1,14 +1,13 @@
 package ru.mechaneg.basejava.storage;
 
-import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 
 public class ListStorage extends AbstractStorage {
 
-    private ArrayList<Resume> storage = new ArrayList<>();
+    private List<Resume> storage = new ArrayList<>();
 
     @Override
     protected int findPosition(String uuid) {
@@ -21,45 +20,28 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
+    protected Resume getAtPosition(int position) {
+        return storage.get(position);
+    }
+
+    @Override
     protected void deleteAtPosition(int position) {
         storage.remove(position);
     }
 
     @Override
-    protected void updateElementInStorage(int position, Resume resume) {
+    protected void updateAtPosition(int position, Resume resume) {
         storage.set(position, resume);
     }
 
     @Override
-    protected void addNewElementToStorage(int insertPosition, Resume resume) {
-        if (insertPosition >= 0) {
-            storage.add(insertPosition, resume);
-        } else {
-            storage.add(resume);
-        }
-    }
-
-    @Override
-    protected void checkOverflow(String uuidOfResumeToAdd) {
-        // do nothing
+    protected void addNewAtPosition(int position, Resume resume) {
+        storage.add(resume);
     }
 
     @Override
     public void clear() {
         storage.clear();
-    }
-
-    @Override
-    public Resume get(String uuid) {
-        Optional<Resume> result = storage.stream()
-                .filter(resume -> resume.getUuid().equals(uuid))
-                .findAny();
-
-        if (result.isPresent()) {
-            return result.get();
-        }
-
-        throw new NotExistStorageException(uuid);
     }
 
     @Override

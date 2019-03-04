@@ -13,15 +13,12 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void deleteAtPosition(int position) {
-        storage[position] = storage[curSize - 1];
-        storage[curSize - 1] = null;
-        curSize--;
+    protected int prepareToInsert(int position) {
+        return curSize;
     }
 
     @Override
-    protected int prepareToInsert(int position) {
-        assert position < 0;
-        return curSize;
+    protected void doDeleteAtPosition(int position) {
+        storage[position] = storage[curSize - 1];
     }
 }

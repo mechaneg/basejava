@@ -12,13 +12,22 @@ public abstract class AbstractStorage implements IStorage {
      */
     protected abstract int findPosition(String uuid);
 
+    protected abstract Resume getAtPosition(int position);
+
     protected abstract void deleteAtPosition(int position);
 
-    protected abstract void updateElementInStorage(int position, Resume resume);
+    protected abstract void updateAtPosition(int position, Resume resume);
 
-    protected abstract void addNewElementToStorage(int insertPosition, Resume resume);
+    protected abstract void addNewAtPosition(int position, Resume resume);
 
-    protected abstract void checkOverflow(String uuidOfResumeToAdd);
+    @Override
+    public Resume get(String uuid) {
+        int resumePos = findPosition(uuid);
+        if (resumePos < 0) {
+            throw new NotExistStorageException(uuid);
+        }
+        return getAtPosition(resumePos);
+    }
 
     @Override
     public void update(Resume resume) {
@@ -26,7 +35,7 @@ public abstract class AbstractStorage implements IStorage {
         if (resumePos < 0) {
             throw new NotExistStorageException(resume.getUuid());
         }
-        updateElementInStorage(resumePos, resume);
+        updateAtPosition(resumePos, resume);
     }
 
     @Override
@@ -36,15 +45,13 @@ public abstract class AbstractStorage implements IStorage {
             return;
         }
 
-        checkOverflow(resume.getUuid());
-
         int insertPos = findPosition(resume.getUuid());
 
         if (insertPos >= 0) {
             throw new ExistStorageException(resume.getUuid());
         }
 
-        addNewElementToStorage(insertPos, resume);
+        addNewAtPosition(insertPos, resume);
     }
 
     @Override
