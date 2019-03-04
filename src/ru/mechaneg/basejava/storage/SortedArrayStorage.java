@@ -18,6 +18,8 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     @Override
     protected void deleteAtPosition(int position) {
         System.arraycopy(storage, position + 1, storage, position, curSize - position - 1);
+        storage[curSize - 1] = null;
+        curSize--;
     }
 
     @Override

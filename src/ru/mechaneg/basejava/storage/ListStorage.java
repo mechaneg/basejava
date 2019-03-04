@@ -1,6 +1,5 @@
 package ru.mechaneg.basejava.storage;
 
-import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
 
@@ -12,21 +11,42 @@ public class ListStorage extends AbstractStorage {
     private ArrayList<Resume> storage = new ArrayList<>();
 
     @Override
-    public void clear() {
-        storage.clear();
+    protected int findPosition(String uuid) {
+        for (int i = 0; i < storage.size(); i++) {
+            if (storage.get(i).getUuid().equals(uuid)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
-    public void save(Resume resume) {
-        if (resume == null) {
-            System.out.println("Unable to save null resume");
-            return;
-        }
-        if (storage.contains(resume)) {
-            throw new ExistStorageException(resume.getUuid());
-        }
+    protected void deleteAtPosition(int position) {
+        storage.remove(position);
+    }
 
-        storage.add(resume);
+    @Override
+    protected void updateElementInStorage(int position, Resume resume) {
+        storage.set(position, resume);
+    }
+
+    @Override
+    protected void addNewElementToStorage(int insertPosition, Resume resume) {
+        if (insertPosition >= 0) {
+            storage.add(insertPosition, resume);
+        } else {
+            storage.add(resume);
+        }
+    }
+
+    @Override
+    protected void checkOverflow(String uuidOfResumeToAdd) {
+        // do nothing
+    }
+
+    @Override
+    public void clear() {
+        storage.clear();
     }
 
     @Override
@@ -40,23 +60,6 @@ public class ListStorage extends AbstractStorage {
         }
 
         throw new NotExistStorageException(uuid);
-    }
-
-    @Override
-    public void delete(String uuid) {
-        if (!storage.removeIf(resume -> resume.getUuid().equals(uuid))) {
-            throw new NotExistStorageException(uuid);
-        }
-    }
-
-    @Override
-    public void update(Resume resume) {
-        int index = storage.indexOf(resume);
-        if (index < 0) {
-            throw new NotExistStorageException(resume.getUuid());
-        }
-
-        storage.set(index, resume);
     }
 
     @Override
