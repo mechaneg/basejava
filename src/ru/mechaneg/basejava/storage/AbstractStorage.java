@@ -9,36 +9,34 @@ public abstract class AbstractStorage implements IStorage {
     /**
      * Finds id of corresponding resume with this uuid.
      */
-    protected abstract Object findId(String uuid);
+    protected abstract Object findSearchKey(String uuid);
 
-    protected abstract Resume getAtId(Object id);
+    protected abstract Resume getBySearchKey(Object searchKey);
 
-    protected abstract void deleteAtId(Object id);
+    protected abstract void deleteBySearchKey(Object searchKey);
 
-    protected abstract void updateAtId(Object id, Resume resume);
+    protected abstract void updateBySearchKey(Object searchKey, Resume resume);
 
-    protected abstract void addNewAtId(Object id, Resume resume);
+    protected abstract void addNewForSearchKey(Object searchKey, Resume resume);
 
-    protected abstract boolean idExists(Object id);
+    protected abstract boolean searchKeyExists(Object searchKey);
 
-    private void assertIdExists(Object id, String uuid) {
-        if (!idExists(id)) {
+    private Object findSearchKeyAssertExists(String uuid) {
+        Object searchKey = findSearchKey(uuid);
+        if (!searchKeyExists(searchKey)) {
             throw new NotExistStorageException(uuid);
         }
+        return searchKey;
     }
 
     @Override
     public Resume get(String uuid) {
-        Object id = findId(uuid);
-        assertIdExists(id, uuid);
-        return getAtId(id);
+        return getBySearchKey(findSearchKeyAssertExists(uuid));
     }
 
     @Override
     public void update(Resume resume) {
-        Object id = findId(resume.getUuid());
-        assertIdExists(id, resume.getUuid());
-        updateAtId(id, resume);
+        updateBySearchKey(findSearchKeyAssertExists(resume.getUuid()), resume);
     }
 
     @Override
@@ -48,19 +46,17 @@ public abstract class AbstractStorage implements IStorage {
             return;
         }
 
-        Object id = findId(resume.getUuid());
+        Object searchKey = findSearchKey(resume.getUuid());
 
-        if (idExists(id)) {
+        if (searchKeyExists(searchKey)) {
             throw new ExistStorageException(resume.getUuid());
         }
 
-        addNewAtId(id, resume);
+        addNewForSearchKey(searchKey, resume);
     }
 
     @Override
     public void delete(String uuid) {
-        Object id = findId(uuid);
-        assertIdExists(id, uuid);
-        deleteAtId(id);
+        deleteBySearchKey(findSearchKeyAssertExists(uuid));
     }
 }
