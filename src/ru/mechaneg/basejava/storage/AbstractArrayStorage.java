@@ -19,32 +19,37 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected abstract void doDeleteAtPosition(int position);
 
     @Override
-    protected Resume getAtPosition(int position) {
-        return storage[position];
+    protected Resume getAtId(Object id) {
+        return storage[(int) id];
     }
 
     @Override
-    protected void updateAtPosition(int position, Resume resume) {
-        storage[position] = resume;
+    protected void updateAtId(Object id, Resume resume) {
+        storage[(int) id] = resume;
     }
 
     @Override
-    protected void addNewAtPosition(int position, Resume resume) {
+    protected void addNewAtId(Object id, Resume resume) {
         if (curSize == MAX_SIZE) {
             throw new StorageOverflowException(resume.getUuid());
         }
 
-        position = prepareToInsert(position);
+        int position = prepareToInsert((int) id);
 
         storage[position] = resume;
         curSize++;
     }
 
     @Override
-    protected void deleteAtPosition(int position) {
-        doDeleteAtPosition(position);
+    protected void deleteAtId(Object id) {
+        doDeleteAtPosition((int) id);
         storage[curSize - 1] = null;
         curSize--;
+    }
+
+    @Override
+    protected boolean idExists(Object id) {
+        return (int) id >= 0;
     }
 
     @Override

@@ -7,35 +7,38 @@ import ru.mechaneg.basejava.model.Resume;
 public abstract class AbstractStorage implements IStorage {
 
     /**
-     * Finds storage position of corresponding resume with this uuid.
-     * If there is no such resume returns negative number.
+     * Finds id of corresponding resume with this uuid.
      */
-    protected abstract int findPosition(String uuid);
+    protected abstract Object findId(String uuid);
 
-    protected abstract Resume getAtPosition(int position);
+    protected abstract Resume getAtId(Object id);
 
-    protected abstract void deleteAtPosition(int position);
+    protected abstract void deleteAtId(Object id);
 
-    protected abstract void updateAtPosition(int position, Resume resume);
+    protected abstract void updateAtId(Object id, Resume resume);
 
-    protected abstract void addNewAtPosition(int position, Resume resume);
+    protected abstract void addNewAtId(Object id, Resume resume);
+
+    protected abstract boolean idExists(Object id);
+
+    private void assertIdExists(Object id, String uuid) {
+        if (!idExists(id)) {
+            throw new NotExistStorageException(uuid);
+        }
+    }
 
     @Override
     public Resume get(String uuid) {
-        int resumePos = findPosition(uuid);
-        if (resumePos < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        return getAtPosition(resumePos);
+        Object id = findId(uuid);
+        assertIdExists(id, uuid);
+        return getAtId(id);
     }
 
     @Override
     public void update(Resume resume) {
-        int resumePos = findPosition(resume.getUuid());
-        if (resumePos < 0) {
-            throw new NotExistStorageException(resume.getUuid());
-        }
-        updateAtPosition(resumePos, resume);
+        Object id = findId(resume.getUuid());
+        assertIdExists(id, resume.getUuid());
+        updateAtId(id, resume);
     }
 
     @Override
@@ -45,22 +48,19 @@ public abstract class AbstractStorage implements IStorage {
             return;
         }
 
-        int insertPos = findPosition(resume.getUuid());
+        Object id = findId(resume.getUuid());
 
-        if (insertPos >= 0) {
+        if (idExists(id)) {
             throw new ExistStorageException(resume.getUuid());
         }
 
-        addNewAtPosition(insertPos, resume);
+        addNewAtId(id, resume);
     }
 
     @Override
     public void delete(String uuid) {
-        int resumePos = findPosition(uuid);
-        if (resumePos < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-
-        deleteAtPosition(resumePos);
+        Object id = findId(uuid);
+        assertIdExists(id, uuid);
+        deleteAtId(id);
     }
 }

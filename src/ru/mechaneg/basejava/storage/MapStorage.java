@@ -2,46 +2,41 @@ package ru.mechaneg.basejava.storage;
 
 import ru.mechaneg.basejava.model.Resume;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ListStorage extends AbstractStorage {
+public class MapStorage extends AbstractStorage {
 
-    private List<Resume> storage = new ArrayList<>();
+    private Map<String, Resume> storage = new HashMap<>();
 
     @Override
     protected Object findId(String uuid) {
-        for (int i = 0; i < storage.size(); i++) {
-            if (storage.get(i).getUuid().equals(uuid)) {
-                return i;
-            }
-        }
-        return -1;
+        return storage.containsKey(uuid) ? uuid : null;
     }
 
     @Override
     protected Resume getAtId(Object id) {
-        return storage.get((int) id);
+        return storage.get(id);
     }
 
     @Override
     protected void deleteAtId(Object id) {
-        storage.remove((int) id);
+        storage.remove(id);
     }
 
     @Override
     protected void updateAtId(Object id, Resume resume) {
-        storage.set((int) id, resume);
+        storage.put((String) id, resume);
     }
 
     @Override
     protected void addNewAtId(Object id, Resume resume) {
-        storage.add(resume);
+        storage.put(resume.getUuid(), resume);
     }
 
     @Override
     protected boolean idExists(Object id) {
-        return (int) id >= 0;
+        return id != null;
     }
 
     @Override
@@ -51,7 +46,7 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     public Resume[] getAll() {
-        return storage.toArray(new Resume[storage.size()]);
+        return storage.values().toArray(new Resume[storage.size()]);
     }
 
     @Override
