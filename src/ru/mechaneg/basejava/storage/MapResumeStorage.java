@@ -2,9 +2,9 @@ package ru.mechaneg.basejava.storage;
 
 import ru.mechaneg.basejava.model.Resume;
 
+import java.util.Comparator;
 import java.util.NavigableSet;
 import java.util.TreeSet;
-import java.util.Comparator;
 
 public class MapResumeStorage extends AbstractStorage {
 
@@ -51,7 +51,7 @@ public class MapResumeStorage extends AbstractStorage {
     }
 
     @Override
-    protected  Resume[] getAll() {
+    protected Resume[] getAll() {
         return storage.toArray(new Resume[storage.size()]);
     }
 

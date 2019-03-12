@@ -8,7 +8,7 @@ import java.util.*;
 
 public abstract class AbstractStorage implements IStorage {
 
-    private static final Comparator<Resume> FULNAME_RESUME_CMP = new Comparator<Resume>(){
+    private static final Comparator<Resume> FULNAME_RESUME_CMP = new Comparator<Resume>() {
         @Override
         public int compare(Resume lhs, Resume rhs) {
             int fullNameCmpResult = lhs.getFullName().compareTo(rhs.getFullName());
