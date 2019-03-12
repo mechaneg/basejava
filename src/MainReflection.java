@@ -9,7 +9,7 @@ public class MainReflection {
             Class resumeClass = Resume.class;
             Method resumeToString = resumeClass.getMethod("toString");
 
-            Resume resume = new Resume("123");
+            Resume resume = new Resume("123", "johny");
             String resumeString = (String) resumeToString.invoke(resume);
 
             System.out.println(resumeString);

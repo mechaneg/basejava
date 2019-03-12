@@ -4,7 +4,20 @@ import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
 
+import java.util.*;
+
 public abstract class AbstractStorage implements IStorage {
+
+    private static final Comparator<Resume> FULNAME_RESUME_CMP = new Comparator<Resume>(){
+        @Override
+        public int compare(Resume lhs, Resume rhs) {
+            int fullNameCmpResult = lhs.getFullName().compareTo(rhs.getFullName());
+            if (fullNameCmpResult == 0) {
+                return lhs.getUuid().compareTo(rhs.getUuid());
+            }
+            return fullNameCmpResult;
+        }
+    };
 
     /**
      * Finds id of corresponding resume with this uuid.
@@ -20,6 +33,8 @@ public abstract class AbstractStorage implements IStorage {
     protected abstract void addNewForSearchKey(Object searchKey, Resume resume);
 
     protected abstract boolean searchKeyExists(Object searchKey);
+
+    protected abstract Resume[] getAll();
 
     private Object findSearchKeyAssertExists(String uuid) {
         Object searchKey = findSearchKey(uuid);
@@ -58,5 +73,12 @@ public abstract class AbstractStorage implements IStorage {
     @Override
     public void delete(String uuid) {
         deleteBySearchKey(findSearchKeyAssertExists(uuid));
+    }
+
+    @Override
+    public List<Resume> getAllSorted() {
+        List<Resume> sortedResumes = new ArrayList<>(Arrays.asList(getAll()));
+        Collections.sort(sortedResumes, FULNAME_RESUME_CMP);
+        return sortedResumes;
     }
 }

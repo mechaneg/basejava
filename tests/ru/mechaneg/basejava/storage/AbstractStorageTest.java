@@ -6,6 +6,8 @@ import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public abstract class AbstractStorageTest {
@@ -14,9 +16,9 @@ public abstract class AbstractStorageTest {
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
 
-    private final Resume resume = new Resume(UUID);
-    private final Resume resume1 = new Resume(UUID_1);
-    private final Resume resume2 = new Resume(UUID_2);
+    private final Resume resume = new Resume(UUID, "john");
+    private final Resume resume1 = new Resume(UUID_1, "clint");
+    private final Resume resume2 = new Resume(UUID_2, "briant");
 
     protected IStorage storage;
 
@@ -54,12 +56,11 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    public void getAll() {
-        Resume[] all = storage.getAll();
-        assertEquals(all.length, 2);
-        boolean equals12 = all[0].equals(resume1) && all[1].equals(resume2);
-        boolean equals21 = all[0].equals(resume2) && all[1].equals(resume1);
-        assertTrue(equals12 || equals21);
+    public void getAllSorted() {
+        List<Resume> all = storage.getAllSorted();
+        assertEquals(all.size(), 2);
+        assertEquals(all.get(0), resume2);
+        assertEquals(all.get(1), resume1);
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -82,7 +83,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        Resume cur = new Resume(UUID_1);
+        Resume cur = new Resume(UUID_1, "dimon");
         storage.update(cur);
 
         assertSame(storage.get(UUID_1), cur);

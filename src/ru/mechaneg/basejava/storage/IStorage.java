@@ -2,6 +2,8 @@ package ru.mechaneg.basejava.storage;
 
 import ru.mechaneg.basejava.model.Resume;
 
+import java.util.List;
+
 public interface IStorage {
     void clear();
 
@@ -13,10 +15,7 @@ public interface IStorage {
 
     void update(Resume resume);
 
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    Resume[] getAll();
+    List<Resume> getAllSorted();
 
     int size();
 }

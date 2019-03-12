@@ -5,16 +5,18 @@ import java.util.Objects;
 /**
  * Initial resume class
  */
-public class Resume implements Comparable<Resume> {
+public class Resume {/*implements Comparable<Resume> {*/
 
     // Unique identifier
     private String uuid;
+    private String fullName;
 
     public Resume() {
     }
 
-    public Resume(String uuid) {
+    public Resume(String uuid, String fullName) {
         this.uuid = uuid;
+        this.fullName = fullName;
     }
 
     public String getUuid() {
@@ -25,9 +27,20 @@ public class Resume implements Comparable<Resume> {
         uuid = newUuid;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     @Override
     public String toString() {
-        return uuid;
+        return "Resume{" +
+                "uuid='" + uuid + '\'' +
+                ", fullName='" + fullName + '\'' +
+                '}';
     }
 
     @Override
@@ -41,10 +54,5 @@ public class Resume implements Comparable<Resume> {
     @Override
     public int hashCode() {
         return Objects.hash(uuid);
-    }
-
-    @Override
-    public int compareTo(Resume rhs) {
-        return this.uuid.compareTo(rhs.uuid);
     }
 }

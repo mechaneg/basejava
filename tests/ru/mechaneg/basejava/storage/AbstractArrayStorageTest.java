@@ -14,15 +14,17 @@ public abstract class AbstractArrayStorageTest extends AbstractStorageTest {
 
     @Test(expected = StorageOverflowException.class)
     public void saveOverFlow() {
+        String someFullName = "some full name";
+
         storage.clear();
         try {
             for (int i = 0; i < AbstractArrayStorage.MAX_SIZE; i++) {
-                storage.save(new Resume(Integer.toString(i)));
+                storage.save(new Resume(Integer.toString(i), someFullName));
             }
         } catch (StorageOverflowException ex) {
             fail("Early overflow");
         }
 
-        storage.save(new Resume("extraUuid"));
+        storage.save(new Resume("extraUuid", someFullName));
     }
 }
