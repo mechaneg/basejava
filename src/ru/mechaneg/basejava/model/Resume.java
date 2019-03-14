@@ -1,17 +1,20 @@
 package ru.mechaneg.basejava.model;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Initial resume class
  */
-public class Resume {/*implements Comparable<Resume> {*/
+public class Resume {
 
     // Unique identifier
     private String uuid;
     private String fullName;
 
-    public Resume() {
+    public Resume(String fullName) {
+        this.uuid = UUID.randomUUID().toString();
+        this.fullName = fullName;
     }
 
     public Resume(String uuid, String fullName) {
@@ -48,11 +51,12 @@ public class Resume {/*implements Comparable<Resume> {*/
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resume resume = (Resume) o;
-        return Objects.equals(uuid, resume.uuid);
+        return Objects.equals(uuid, resume.uuid) &&
+                Objects.equals(fullName, resume.fullName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid);
+        return Objects.hash(uuid, fullName);
     }
 }

@@ -3,7 +3,7 @@ package ru.mechaneg.basejava.storage;
 public class ArrayStorage extends AbstractArrayStorage {
 
     @Override
-    protected Object findSearchKey(String uuid) {
+    protected Integer findSearchKey(String uuid) {
         for (int i = 0; i < curSize; i++) {
             if (storage[i].getUuid().equals(uuid)) {
                 return i;

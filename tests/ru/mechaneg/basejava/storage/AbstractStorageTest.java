@@ -6,6 +6,7 @@ import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -37,8 +38,8 @@ public abstract class AbstractStorageTest {
     @Test
     public void save() {
         storage.save(resume);
-        assertSame(storage.get(UUID), resume);
-        assertEquals(storage.size(), 3);
+        assertSame(resume, storage.get(UUID));
+        assertEquals(3, storage.size());
     }
 
     @Test(expected = ExistStorageException.class)
@@ -48,7 +49,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void get() {
-        assertSame(storage.get(UUID_1), resume1);
+        assertSame(resume1, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -58,16 +59,15 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAllSorted() {
-        List<Resume> all = storage.getAllSorted();
-        assertEquals(all.size(), 2);
-        assertEquals(all.get(0), resume2);
-        assertEquals(all.get(1), resume1);
+        List<Resume> expected = Arrays.asList(resume2, resume1);
+        List<Resume> actual = storage.getAllSorted();
+        assertEquals(expected, actual);
     }
 
     @Test(expected = NotExistStorageException.class)
     public void delete() {
         storage.delete(UUID_1);
-        assertEquals(storage.size(), 1);
+        assertEquals(1, storage.size());
         storage.get(UUID_1);
     }
 
@@ -79,15 +79,15 @@ public abstract class AbstractStorageTest {
     @Test
     public void clear() {
         storage.clear();
-        assertEquals(storage.size(), 0);
+        assertEquals(0, storage.size());
     }
 
     @Test
     public void update() {
-        Resume cur = new Resume(UUID_1, "dimon");
-        storage.update(cur);
+        Resume current = new Resume(UUID_1, "dimon");
+        storage.update(current);
 
-        assertSame(storage.get(UUID_1), cur);
+        assertSame(current, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -97,6 +97,6 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void size() {
-        assertEquals(storage.size(), 2);
+        assertEquals(2, storage.size());
     }
 }

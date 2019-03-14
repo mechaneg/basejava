@@ -10,7 +10,7 @@ public class ListStorage extends AbstractStorage {
     private List<Resume> storage = new ArrayList<>();
 
     @Override
-    protected Object findSearchKey(String uuid) {
+    protected Integer findSearchKey(String uuid) {
         for (int i = 0; i < storage.size(); i++) {
             if (storage.get(i).getUuid().equals(uuid)) {
                 return i;
@@ -35,12 +35,12 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected void addNewForSearchKey(Object searchKey, Resume resume) {
+    protected void addNew(Object searchKey, Resume resume) {
         storage.add(resume);
     }
 
     @Override
-    protected boolean searchKeyExists(Object searchKey) {
+    protected boolean isSearchKeyExist(Object searchKey) {
         return (int) searchKey >= 0;
     }
 

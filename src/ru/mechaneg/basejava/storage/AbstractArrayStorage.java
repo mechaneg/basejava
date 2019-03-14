@@ -29,7 +29,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected void addNewForSearchKey(Object searchKey, Resume resume) {
+    protected void addNew(Object searchKey, Resume resume) {
         if (curSize == MAX_SIZE) {
             throw new StorageOverflowException(resume.getUuid());
         }
@@ -48,7 +48,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean searchKeyExists(Object searchKey) {
+    protected boolean isSearchKeyExist(Object searchKey) {
         return (int) searchKey >= 0;
     }
 

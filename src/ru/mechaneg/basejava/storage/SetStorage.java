@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
-public class MapResumeStorage extends AbstractStorage {
+public class SetStorage extends AbstractStorage {
 
     private NavigableSet<Resume> storage = new TreeSet<>(new Comparator<Resume>() {
         @Override
@@ -16,7 +16,7 @@ public class MapResumeStorage extends AbstractStorage {
     });
 
     @Override
-    protected Object findSearchKey(String uuid) {
+    protected Resume findSearchKey(String uuid) {
         Resume searchKey = storage.ceiling(new Resume(uuid, "stub name"));
         if (searchKey == null || !searchKey.getUuid().equals(uuid)) {
             return null;
@@ -41,12 +41,12 @@ public class MapResumeStorage extends AbstractStorage {
     }
 
     @Override
-    protected void addNewForSearchKey(Object searchKey, Resume resume) {
+    protected void addNew(Object searchKey, Resume resume) {
         storage.add(resume);
     }
 
     @Override
-    protected boolean searchKeyExists(Object searchKey) {
+    protected boolean isSearchKeyExist(Object searchKey) {
         return searchKey != null;
     }
 

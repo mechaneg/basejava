@@ -8,15 +8,12 @@ import java.util.*;
 
 public abstract class AbstractStorage implements IStorage {
 
-    private static final Comparator<Resume> FULNAME_RESUME_CMP = new Comparator<Resume>() {
-        @Override
-        public int compare(Resume lhs, Resume rhs) {
-            int fullNameCmpResult = lhs.getFullName().compareTo(rhs.getFullName());
-            if (fullNameCmpResult == 0) {
-                return lhs.getUuid().compareTo(rhs.getUuid());
-            }
-            return fullNameCmpResult;
+    private static final Comparator<Resume> FULNAME_RESUME_CMP = (lhs, rhs) -> {
+        int fullNameCmpResult = lhs.getFullName().compareTo(rhs.getFullName());
+        if (fullNameCmpResult == 0) {
+            return lhs.getUuid().compareTo(rhs.getUuid());
         }
+        return fullNameCmpResult;
     };
 
     /**
@@ -30,19 +27,11 @@ public abstract class AbstractStorage implements IStorage {
 
     protected abstract void updateBySearchKey(Object searchKey, Resume resume);
 
-    protected abstract void addNewForSearchKey(Object searchKey, Resume resume);
+    protected abstract void addNew(Object searchKey, Resume resume);
 
-    protected abstract boolean searchKeyExists(Object searchKey);
+    protected abstract boolean isSearchKeyExist(Object searchKey);
 
     protected abstract Resume[] getAll();
-
-    private Object findSearchKeyAssertExists(String uuid) {
-        Object searchKey = findSearchKey(uuid);
-        if (!searchKeyExists(searchKey)) {
-            throw new NotExistStorageException(uuid);
-        }
-        return searchKey;
-    }
 
     @Override
     public Resume get(String uuid) {
@@ -63,11 +52,11 @@ public abstract class AbstractStorage implements IStorage {
 
         Object searchKey = findSearchKey(resume.getUuid());
 
-        if (searchKeyExists(searchKey)) {
+        if (isSearchKeyExist(searchKey)) {
             throw new ExistStorageException(resume.getUuid());
         }
 
-        addNewForSearchKey(searchKey, resume);
+        addNew(searchKey, resume);
     }
 
     @Override
@@ -77,8 +66,16 @@ public abstract class AbstractStorage implements IStorage {
 
     @Override
     public List<Resume> getAllSorted() {
-        List<Resume> sortedResumes = new ArrayList<>(Arrays.asList(getAll()));
-        Collections.sort(sortedResumes, FULNAME_RESUME_CMP);
+        List<Resume> sortedResumes = Arrays.asList(getAll());
+        sortedResumes.sort(FULNAME_RESUME_CMP);
         return sortedResumes;
+    }
+
+    private Object findSearchKeyAssertExists(String uuid) {
+        Object searchKey = findSearchKey(uuid);
+        if (!isSearchKeyExist(searchKey)) {
+            throw new NotExistStorageException(uuid);
+        }
+        return searchKey;
     }
 }

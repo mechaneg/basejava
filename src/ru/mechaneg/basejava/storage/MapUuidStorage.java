@@ -30,12 +30,12 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected void addNewForSearchKey(Object searchKey, Resume resume) {
+    protected void addNew(Object searchKey, Resume resume) {
         storage.put(resume.getUuid(), resume);
     }
 
     @Override
-    protected boolean searchKeyExists(Object searchKey) {
+    protected boolean isSearchKeyExist(Object searchKey) {
         return storage.containsKey(searchKey);
     }
 
