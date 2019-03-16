@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
 
-    private static final Comparator<Resume> BIN_SEARCH_COMPARATOR = (lhs, rhs) -> lhs.getUuid().compareTo(rhs.getUuid());
+    private static final Comparator<Resume> BIN_SEARCH_COMPARATOR = Comparator.comparing(Resume::getUuid);
 
     /**
      * @return Imitates Arrays.binarySearch behaviour

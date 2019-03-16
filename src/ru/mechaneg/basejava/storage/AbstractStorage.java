@@ -4,17 +4,14 @@ import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 public abstract class AbstractStorage implements IStorage {
 
-    private static final Comparator<Resume> FULNAME_RESUME_CMP = (lhs, rhs) -> {
-        int fullNameCmpResult = lhs.getFullName().compareTo(rhs.getFullName());
-        if (fullNameCmpResult == 0) {
-            return lhs.getUuid().compareTo(rhs.getUuid());
-        }
-        return fullNameCmpResult;
-    };
+    private static final Comparator<Resume> FULNAME_RESUME_CMP =
+            Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
     /**
      * Finds id of corresponding resume with this uuid.
