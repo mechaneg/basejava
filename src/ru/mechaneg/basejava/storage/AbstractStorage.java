@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class AbstractStorage implements IStorage {
 
-    private static final Comparator<Resume> FULNAME_RESUME_CMP =
+    private static final Comparator<Resume> FULLNAME_RESUME_CMP =
             Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
     /**
@@ -64,7 +64,7 @@ public abstract class AbstractStorage implements IStorage {
     @Override
     public List<Resume> getAllSorted() {
         List<Resume> sortedResumes = Arrays.asList(getAll());
-        sortedResumes.sort(FULNAME_RESUME_CMP);
+        sortedResumes.sort(FULLNAME_RESUME_CMP);
         return sortedResumes;
     }
 
