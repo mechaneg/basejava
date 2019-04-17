@@ -1,7 +1,6 @@
 package ru.mechaneg.basejava.model;
 
 import ru.mechaneg.basejava.exception.ResumeSectionNotExistException;
-import ru.mechaneg.basejava.exception.ResumeSectionTypeMismatchException;
 
 import java.util.*;
 
@@ -12,18 +11,8 @@ public class Resume {
 
     private String uuid;
     private String fullName;
-
-    public enum SectionType {
-        PERSONAL,
-        OBJECTIVE,
-        ACHIEVEMENT,
-        QUALIFICATIONS,
-        EXPERIENCE,
-        EDUCATION,
-        CONTACTS;
-
-    }
-    private Map<SectionType, AbstractSection> sections = new HashMap<>();
+    private ContactsSection contacts;
+    private EnumMap<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
 
 
     public Resume(String fullName) {
@@ -51,6 +40,14 @@ public class Resume {
         this.fullName = fullName;
     }
 
+    public ContactsSection getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(ContactsSection contacts) {
+        this.contacts = contacts;
+    }
+
     public AbstractSection getSection(SectionType type) {
         if (sections.containsKey(type)) {
             return sections.get(type);
@@ -59,31 +56,6 @@ public class Resume {
     }
 
     public void setSection(SectionType type, AbstractSection section) {
-        switch (type) {
-            case PERSONAL:
-            case OBJECTIVE:
-                if (!(section instanceof TextSection)) {
-                    throw new ResumeSectionTypeMismatchException();
-                }
-                break;
-            case EXPERIENCE:
-            case EDUCATION:
-                if (!(section instanceof ChronologicalSection)) {
-                    throw new ResumeSectionTypeMismatchException();
-                }
-                break;
-            case ACHIEVEMENT:
-            case QUALIFICATIONS:
-                if (!(section instanceof EnumeratedTextSection)) {
-                        throw new ResumeSectionTypeMismatchException();
-                }
-                break;
-            case CONTACTS:
-                if (!(section instanceof ContactsSection)) {
-                    throw new ResumeSectionTypeMismatchException();
-                }
-                break;
-        }
         sections.put(type, section);
     }
 
@@ -92,6 +64,7 @@ public class Resume {
         return "Resume{" +
                 "uuid='" + uuid + '\'' +
                 ", fullName='" + fullName + '\'' +
+                ", contacts=" + contacts +
                 ", sections=" + sections +
                 '}';
     }
@@ -103,11 +76,12 @@ public class Resume {
         Resume resume = (Resume) o;
         return Objects.equals(uuid, resume.uuid) &&
                 Objects.equals(fullName, resume.fullName) &&
+                Objects.equals(contacts, resume.contacts) &&
                 Objects.equals(sections, resume.sections);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, fullName, sections);
+        return Objects.hash(uuid, fullName, contacts, sections);
     }
 }

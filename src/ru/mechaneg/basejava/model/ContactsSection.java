@@ -1,26 +1,16 @@
 package ru.mechaneg.basejava.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
+import java.util.Objects;
 
 public class ContactsSection extends AbstractSection {
 
-    public enum ContactType {
-        TELEPHONE,
-        SKYPE,
-        MAIL,
-        LINKEDIN,
-        GITHUB,
-        STACKOVERFLOW,
-        HOMEPAGE
-    }
-
-    private Map<ContactType, String> contacts = new HashMap<>();
+    private EnumMap<ContactType, String> contacts = new EnumMap<>(ContactType.class);
 
     public ContactsSection() {
     }
 
-    public ContactsSection(Map<ContactType, String> contacts) {
+    public ContactsSection(EnumMap<ContactType, String> contacts) {
         this.contacts = contacts;
     }
 
@@ -30,6 +20,19 @@ public class ContactsSection extends AbstractSection {
 
     public void setContact(ContactType type, String contact) {
         contacts.put(type, contact);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ContactsSection that = (ContactsSection) o;
+        return Objects.equals(contacts, that.contacts);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(contacts);
     }
 
     @Override
