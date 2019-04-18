@@ -67,13 +67,13 @@ public class ResumeTestData {
                 )
         );
 
-        res.setContact(ContactType.TELEPHONE, new TelephoneContact("+7(921) 855-0482"));
-        res.setContact(ContactType.SKYPE, new VoipContact("grigory.kislin"));
-        res.setContact(ContactType.MAIL, new MailContact("gkislin@yandex.ru"));
-        res.setContact(ContactType.LINKEDIN, new SiteContact("https://www.linkedin.com/in/gkislin/"));
-        res.setContact(ContactType.GITHUB, new SiteContact("https://github.com/gkislin"));
-        res.setContact(ContactType.STACKOVERFLOW, new SiteContact("https://stackoverflow.com/users/548473/gkislin"));
-        res.setContact(ContactType.HOMEPAGE, new SiteContact("http://gkislin.ru"));
+        res.setContact(ContactType.TELEPHONE, new Contact("+7(921) 855-0482"));
+        res.setContact(ContactType.SKYPE, new Contact("grigory.kislin"));
+        res.setContact(ContactType.MAIL, new Contact("gkislin@yandex.ru"));
+        res.setContact(ContactType.LINKEDIN, new Contact("https://www.linkedin.com/in/gkislin/"));
+        res.setContact(ContactType.GITHUB, new Contact("https://github.com/gkislin"));
+        res.setContact(ContactType.STACKOVERFLOW, new Contact("https://stackoverflow.com/users/548473/gkislin"));
+        res.setContact(ContactType.HOMEPAGE, new Contact("http://gkislin.ru"));
 
         // Output contacts of resume
         //

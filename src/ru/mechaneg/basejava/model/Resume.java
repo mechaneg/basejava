@@ -14,7 +14,7 @@ public class Resume {
 
     private String uuid;
     private String fullName;
-    private EnumMap<ContactType, AbstractContact> contacts = new EnumMap<>(ContactType.class);
+    private EnumMap<ContactType, Contact> contacts = new EnumMap<>(ContactType.class);
     private EnumMap<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
 
 
@@ -43,14 +43,14 @@ public class Resume {
         this.fullName = fullName;
     }
 
-    public AbstractContact getContact(ContactType type) {
+    public Contact getContact(ContactType type) {
         if (contacts.containsKey(type)) {
             return contacts.get(type);
         }
         throw new ResumeContactNotExistException();
     }
 
-    public void setContact(ContactType type, AbstractContact contact) {
+    public void setContact(ContactType type, Contact contact) {
         contacts.put(type, contact);
     }
 
