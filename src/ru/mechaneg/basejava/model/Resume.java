@@ -1,8 +1,11 @@
 package ru.mechaneg.basejava.model;
 
+import ru.mechaneg.basejava.exception.ResumeContactNotExistException;
 import ru.mechaneg.basejava.exception.ResumeSectionNotExistException;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Initial resume class
@@ -11,7 +14,7 @@ public class Resume {
 
     private String uuid;
     private String fullName;
-    private ContactsSection contacts;
+    private EnumMap<ContactType, AbstractContact> contacts = new EnumMap<>(ContactType.class);
     private EnumMap<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
 
 
@@ -40,12 +43,15 @@ public class Resume {
         this.fullName = fullName;
     }
 
-    public ContactsSection getContacts() {
-        return contacts;
+    public AbstractContact getContact(ContactType type) {
+        if (contacts.containsKey(type)) {
+            return contacts.get(type);
+        }
+        throw new ResumeContactNotExistException();
     }
 
-    public void setContacts(ContactsSection contacts) {
-        this.contacts = contacts;
+    public void setContact(ContactType type, AbstractContact contact) {
+        contacts.put(type, contact);
     }
 
     public AbstractSection getSection(SectionType type) {

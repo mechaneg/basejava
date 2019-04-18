@@ -1,3 +1,4 @@
+import ru.mechaneg.basejava.exception.ResumeContactNotExistException;
 import ru.mechaneg.basejava.exception.ResumeSectionNotExistException;
 import ru.mechaneg.basejava.model.*;
 
@@ -44,18 +45,20 @@ public class ResumeTestData {
                 )
         );
 
-        res.setSection(SectionType.EDUCATION, new EducationSection(
+        res.setSection(SectionType.EDUCATION, new ExperienceSection(
                         Arrays.asList(
-                                new Education(
+                                new Experience(
                                         "LUXOFT",
                                         "https://www.luxoft.com/",
+                                        null,
                                         "OOP and UML",
                                         LocalDate.of(2011, 03, 01),
                                         LocalDate.of(2011, 04, 01)
                                 ),
-                                new Education(
+                                new Experience(
                                         "COURSERA",
                                         "https://www.coursera.org/",
+                                        null,
                                         "functional programming in scala",
                                         LocalDate.of(2013, 03, 01),
                                         LocalDate.of(2013, 05, 01)
@@ -64,26 +67,20 @@ public class ResumeTestData {
                 )
         );
 
-        {
-            EnumMap<ContactType, String> contacts = new EnumMap<>(ContactType.class);
-            contacts.put(ContactType.TELEPHONE, "+7(921) 855-0482");
-            contacts.put(ContactType.SKYPE, "grigory.kislin");
-            contacts.put(ContactType.MAIL, "gkislin@yandex.ru");
-            contacts.put(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin/");
-            contacts.put(ContactType.GITHUB, "https://github.com/gkislin");
-            contacts.put(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/548473/gkislin");
-            contacts.put(ContactType.HOMEPAGE, "http://gkislin.ru");
-
-            res.setContacts(new ContactsSection(contacts));
-        }
+        res.setContact(ContactType.TELEPHONE, new TelephoneContact("+7(921) 855-0482"));
+        res.setContact(ContactType.SKYPE, new VoipContact("grigory.kislin"));
+        res.setContact(ContactType.MAIL, new MailContact("gkislin@yandex.ru"));
+        res.setContact(ContactType.LINKEDIN, new SiteContact("https://www.linkedin.com/in/gkislin/"));
+        res.setContact(ContactType.GITHUB, new SiteContact("https://github.com/gkislin"));
+        res.setContact(ContactType.STACKOVERFLOW, new SiteContact("https://stackoverflow.com/users/548473/gkislin"));
+        res.setContact(ContactType.HOMEPAGE, new SiteContact("http://gkislin.ru"));
 
         // Output contacts of resume
         //
         System.out.println("CONTACTS\n");
 
-        ContactsSection contacts = res.getContacts();
         for (ContactType type : ContactType.values()) {
-            System.out.println(type + " : " + contacts.getContact(type));
+            System.out.println(type + " : " + res.getContact(type));
         }
 
         // Output experience of resume
@@ -95,13 +92,29 @@ public class ResumeTestData {
             System.out.println(experienceRow);
         }
 
+        // Output education of resume
+        //
+        System.out.println("\n" + SectionType.EDUCATION + " :\n");
+
+        ExperienceSection education = (ExperienceSection)res.getSection(SectionType.EDUCATION);
+        for (Experience experienceRow : education.getExperiences()) {
+            System.out.println(experienceRow);
+        }
+
         // Inconsistent resume
         //
         Resume resInsonsitent = new Resume("Dmitry Shaposhnikov");
+
         try {
             resInsonsitent.getSection(SectionType.ACHIEVEMENT);
         } catch (ResumeSectionNotExistException ex) {
             System.out.println("\n" + SectionType.ACHIEVEMENT + " section doesn't exist");
+        }
+
+        try {
+            resInsonsitent.getContact(ContactType.SKYPE);
+        } catch (ResumeContactNotExistException ex) {
+            System.out.println("\n" + ContactType.SKYPE + " contact doesn't exist");
         }
     }
 }
