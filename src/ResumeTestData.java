@@ -4,7 +4,6 @@ import ru.mechaneg.basejava.model.*;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.EnumMap;
 
 public class ResumeTestData {
     public static void main(String... args) {
@@ -23,9 +22,9 @@ public class ResumeTestData {
         res.setSection(SectionType.QUALIFICATIONS, new MarkedTextSection(
                 Arrays.asList("java8, guava", "postgresql, redis", "git, svn")));
 
-        res.setSection(SectionType.EXPERIENCE, new ExperienceSection(
+        res.setSection(SectionType.EXPERIENCE, new OrganizationSection(
                         Arrays.asList(
-                                new Experience(
+                                new Organization(
                                         "YOTA",
                                         "https://www.yota.ru/",
                                         "lead specialist",
@@ -33,7 +32,7 @@ public class ResumeTestData {
                                         LocalDate.of(2008, 06, 01),
                                         LocalDate.of(2010, 12, 01)
                                 ),
-                                new Experience(
+                                new Organization(
                                         "LUXOFT",
                                         "https://www.luxoft.com/",
                                         "lead developer",
@@ -45,9 +44,9 @@ public class ResumeTestData {
                 )
         );
 
-        res.setSection(SectionType.EDUCATION, new ExperienceSection(
+        res.setSection(SectionType.EDUCATION, new OrganizationSection(
                         Arrays.asList(
-                                new Experience(
+                                new Organization(
                                         "LUXOFT",
                                         "https://www.luxoft.com/",
                                         null,
@@ -55,7 +54,7 @@ public class ResumeTestData {
                                         LocalDate.of(2011, 03, 01),
                                         LocalDate.of(2011, 04, 01)
                                 ),
-                                new Experience(
+                                new Organization(
                                         "COURSERA",
                                         "https://www.coursera.org/",
                                         null,
@@ -87,18 +86,18 @@ public class ResumeTestData {
         //
         System.out.println("\n" + SectionType.EXPERIENCE + " :\n");
 
-        ExperienceSection experience = (ExperienceSection)res.getSection(SectionType.EXPERIENCE);
-        for (Experience experienceRow : experience.getExperiences()) {
-            System.out.println(experienceRow);
+        OrganizationSection experience = (OrganizationSection)res.getSection(SectionType.EXPERIENCE);
+        for (Organization organizationRow : experience.getOrganizations()) {
+            System.out.println(organizationRow);
         }
 
         // Output education of resume
         //
         System.out.println("\n" + SectionType.EDUCATION + " :\n");
 
-        ExperienceSection education = (ExperienceSection)res.getSection(SectionType.EDUCATION);
-        for (Experience experienceRow : education.getExperiences()) {
-            System.out.println(experienceRow);
+        OrganizationSection education = (OrganizationSection)res.getSection(SectionType.EDUCATION);
+        for (Organization organizationRow : education.getOrganizations()) {
+            System.out.println(organizationRow);
         }
 
         // Inconsistent resume

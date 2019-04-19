@@ -5,15 +5,15 @@ import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Experience {
-    private String company;
-    private String companyUrl;
-    private String position;
-    private String description;
-    private LocalDate start;
-    private LocalDate end;
+public class Organization {
+    private final String company;
+    private final String companyUrl;
+    private final String position;
+    private final String description;
+    private final LocalDate start;
+    private final LocalDate end;
 
-    public Experience(String company, String companyUrl, String position, String description, LocalDate start, LocalDate end) {
+    public Organization(String company, String companyUrl, String position, String description, LocalDate start, LocalDate end) {
         this.company = company;
         this.companyUrl = companyUrl;
         this.position = position;
@@ -64,7 +64,7 @@ public class Experience {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Experience that = (Experience) o;
+        Organization that = (Organization) o;
         return Objects.equals(company, that.company) &&
                 Objects.equals(companyUrl, that.companyUrl) &&
                 Objects.equals(position, that.position) &&

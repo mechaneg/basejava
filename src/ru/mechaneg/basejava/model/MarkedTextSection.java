@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class MarkedTextSection extends AbstractSection {
-    private List<String> items;
+    private final List<String> items;
 
     public MarkedTextSection(List<String> items) {
+        Objects.requireNonNull(items);
         this.items = items;
     }
 
