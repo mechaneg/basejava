@@ -1,29 +1,18 @@
 package ru.mechaneg.basejava.model;
 
-import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
-
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 public class Organization {
+
     private final String company;
     private final String companyUrl;
-    private final String position;
-    private final String description;
-    private final LocalDate start;
-    private final LocalDate end;
+    private final List<OrganizationEntry> entries;
 
-    public Organization(String company, String companyUrl, String position, String description, LocalDate start, LocalDate end) {
+    public Organization(String company, String companyUrl, List<OrganizationEntry> entries) {
         this.company = company;
         this.companyUrl = companyUrl;
-        this.position = position;
-        this.description = description;
-        this.start = start;
-        this.end = end;
-
-        if (start.compareTo(end) >= 0) {
-            throw new InconsistentDatePeriodException();
-        }
+        this.entries = entries;
     }
 
     public String getCompany() {
@@ -34,30 +23,8 @@ public class Organization {
         return companyUrl;
     }
 
-    public String getPosition() { return position; }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public LocalDate getStart() {
-        return start;
-    }
-
-    public LocalDate getEnd() {
-        return end;
-    }
-
-    @Override
-    public String toString() {
-        return "Experience{" +
-                "company='" + company + '\'' +
-                ", companyUrl='" + companyUrl + '\'' +
-                ", position='" + position + '\'' +
-                ", description='" + description + '\'' +
-                ", start=" + start +
-                ", end=" + end +
-                '}';
+    public List<OrganizationEntry> getEntries() {
+        return entries;
     }
 
     @Override
@@ -67,14 +34,11 @@ public class Organization {
         Organization that = (Organization) o;
         return Objects.equals(company, that.company) &&
                 Objects.equals(companyUrl, that.companyUrl) &&
-                Objects.equals(position, that.position) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(start, that.start) &&
-                Objects.equals(end, that.end);
+                Objects.equals(entries, that.entries);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(company, companyUrl, position, description, start, end);
+        return Objects.hash(company, companyUrl, entries);
     }
 }

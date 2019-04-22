@@ -27,18 +27,26 @@ public class ResumeTestData {
                                 new Organization(
                                         "YOTA",
                                         "https://www.yota.ru/",
-                                        "lead specialist",
-                                        "design and implementation of pay systems",
-                                        LocalDate.of(2008, 06, 01),
-                                        LocalDate.of(2010, 12, 01)
+                                        Arrays.asList(
+                                                new OrganizationEntry("lead specialist",
+                                                        "design and implementation of pay systems",
+                                                        LocalDate.of(2008, 06, 01),
+                                                        LocalDate.of(2010, 12, 01)
+                                                )
+                                        )
+
                                 ),
                                 new Organization(
                                         "LUXOFT",
                                         "https://www.luxoft.com/",
-                                        "lead developer",
-                                        "Deutsche Bank CRM",
-                                        LocalDate.of(2010, 12, 01),
-                                        LocalDate.of(2012, 04, 01)
+                                        Arrays.asList(
+                                                new OrganizationEntry(
+                                                        "lead developer",
+                                                        "Deutsche Bank CRM",
+                                                        LocalDate.of(2010, 12, 01),
+                                                        LocalDate.of(2012, 04, 01)
+                                                )
+                                        )
                                 )
                         )
                 )
@@ -49,18 +57,26 @@ public class ResumeTestData {
                                 new Organization(
                                         "LUXOFT",
                                         "https://www.luxoft.com/",
-                                        null,
-                                        "OOP and UML",
-                                        LocalDate.of(2011, 03, 01),
-                                        LocalDate.of(2011, 04, 01)
+                                        Arrays.asList(
+                                                new OrganizationEntry(
+                                                        null,
+                                                        "OOP and UML",
+                                                        LocalDate.of(2011, 03, 01),
+                                                        LocalDate.of(2011, 04, 01)
+                                                )
+                                        )
                                 ),
                                 new Organization(
                                         "COURSERA",
                                         "https://www.coursera.org/",
-                                        null,
-                                        "functional programming in scala",
-                                        LocalDate.of(2013, 03, 01),
-                                        LocalDate.of(2013, 05, 01)
+                                        Arrays.asList(
+                                                new OrganizationEntry(
+                                                        null,
+                                                        "functional programming in scala",
+                                                        LocalDate.of(2013, 03, 01),
+                                                        LocalDate.of(2013, 05, 01)
+                                                )
+                                        )
                                 )
                         )
                 )
@@ -86,7 +102,7 @@ public class ResumeTestData {
         //
         System.out.println("\n" + SectionType.EXPERIENCE + " :\n");
 
-        OrganizationSection experience = (OrganizationSection)res.getSection(SectionType.EXPERIENCE);
+        OrganizationSection experience = (OrganizationSection) res.getSection(SectionType.EXPERIENCE);
         for (Organization organizationRow : experience.getOrganizations()) {
             System.out.println(organizationRow);
         }
@@ -95,7 +111,7 @@ public class ResumeTestData {
         //
         System.out.println("\n" + SectionType.EDUCATION + " :\n");
 
-        OrganizationSection education = (OrganizationSection)res.getSection(SectionType.EDUCATION);
+        OrganizationSection education = (OrganizationSection) res.getSection(SectionType.EDUCATION);
         for (Organization organizationRow : education.getOrganizations()) {
             System.out.println(organizationRow);
         }
