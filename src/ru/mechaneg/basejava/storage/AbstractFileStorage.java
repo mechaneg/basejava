@@ -69,7 +69,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
     protected List<Resume> getAll() {
         List<Resume> resumes = new ArrayList<>();
 
-        for (File file : listFilesSafe()) {
+        for (File file : checkForNull(directory.listFiles())) {
             resumes.add(deserialize(file));
         }
 
@@ -78,7 +78,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
 
     @Override
     public void clear() {
-        for (File file : listFilesSafe()) {
+        for (File file : checkForNull(directory.listFiles())) {
             if (!file.delete()) {
                 throw new StorageException("Unable to delete file", file.getName());
             }
@@ -87,15 +87,14 @@ public abstract class AbstractFileStorage extends AbstractStorage {
 
     @Override
     public int size() {
-        return listFilesSafe().length;
+        return checkForNull(directory.listFiles()).length;
     }
 
     abstract void serialize(Resume resume, File file);
 
     abstract Resume deserialize(File file);
 
-    private File[] listFilesSafe() {
-        File[] files = directory.listFiles();
+    private File[] checkForNull(File[] files) {
         if (files == null) {
             throw new StorageException("Working directory is not a directory or IO error happened");
         }

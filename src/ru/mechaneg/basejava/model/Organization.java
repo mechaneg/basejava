@@ -7,12 +7,12 @@ public class Organization {
 
     private final String company;
     private final String companyUrl;
-    private final List<Position> entries;
+    private final List<Position> positions;
 
-    public Organization(String company, String companyUrl, List<Position> entries) {
+    public Organization(String company, String companyUrl, List<Position> positions) {
         this.company = company;
         this.companyUrl = companyUrl;
-        this.entries = entries;
+        this.positions = positions;
     }
 
     public String getCompany() {
@@ -23,8 +23,8 @@ public class Organization {
         return companyUrl;
     }
 
-    public List<Position> getEntries() {
-        return entries;
+    public List<Position> getPositions() {
+        return positions;
     }
 
     @Override
@@ -34,11 +34,11 @@ public class Organization {
         Organization that = (Organization) o;
         return Objects.equals(company, that.company) &&
                 Objects.equals(companyUrl, that.companyUrl) &&
-                Objects.equals(entries, that.entries);
+                Objects.equals(positions, that.positions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(company, companyUrl, entries);
+        return Objects.hash(company, companyUrl, positions);
     }
 }
