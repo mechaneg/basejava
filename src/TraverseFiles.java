@@ -3,27 +3,25 @@ import java.io.File;
 public class TraverseFiles {
 
     public static void main(String... args) {
-        TraverseFiles traverser = new TraverseFiles();
         File projectRoot = new File(".");
-        traverser.traverse(projectRoot);
+        displayFiles(projectRoot);
     }
 
-    public void traverse(File currentDir) {
-
-        File[] files = currentDir.listFiles((file) -> {
-            return file.isFile() && !file.isHidden();
-        });
-
-        for (File file : files) {
-            System.out.println(file.getPath());
+    private static void displayFiles(File currentDir) {
+        if (!currentDir.isDirectory()) {
+            throw new AssertionError("currentDir is not a directory");
         }
 
-        File[] dirs = currentDir.listFiles((file) -> {
-            return file.isDirectory() && !file.isHidden();
-        });
+        File[] files = currentDir.listFiles(file -> file.isFile() && !file.isHidden());
+
+        for (File file : files) {
+            System.out.println(file.getName());
+        }
+
+        File[] dirs = currentDir.listFiles(file -> file.isDirectory() && !file.isHidden());
 
         for (File dir : dirs) {
-            traverse(dir);
+            displayFiles(dir);
         }
     }
 }

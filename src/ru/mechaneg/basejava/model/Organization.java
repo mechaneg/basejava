@@ -7,9 +7,9 @@ public class Organization {
 
     private final String company;
     private final String companyUrl;
-    private final List<OrganizationEntry> entries;
+    private final List<Position> entries;
 
-    public Organization(String company, String companyUrl, List<OrganizationEntry> entries) {
+    public Organization(String company, String companyUrl, List<Position> entries) {
         this.company = company;
         this.companyUrl = companyUrl;
         this.entries = entries;
@@ -23,7 +23,7 @@ public class Organization {
         return companyUrl;
     }
 
-    public List<OrganizationEntry> getEntries() {
+    public List<Position> getEntries() {
         return entries;
     }
 

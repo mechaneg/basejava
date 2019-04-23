@@ -30,7 +30,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
 
     @Override
     protected Resume getBySearchKey(Object searchKey) {
-        return deserializeResume((File) searchKey);
+        return deserialize((File) searchKey);
     }
 
     @Override
@@ -44,18 +44,20 @@ public abstract class AbstractFileStorage extends AbstractStorage {
     @Override
     protected void updateBySearchKey(Object searchKey, Resume resume) {
         File file = (File) searchKey;
-        serializeResume(resume, file);
+        serialize(resume, file);
     }
 
     @Override
     protected void addNew(Object searchKey, Resume resume) {
         File file = (File) searchKey;
         try {
-            file.createNewFile();
+            if (!file.createNewFile()) {
+                throw new IOException("File already exists");
+            }
         } catch (IOException ex) {
             throw new StorageException("Unable to create a file", resume.getUuid(), ex);
         }
-        serializeResume(resume, file);
+        serialize(resume, file);
     }
 
     @Override
@@ -67,16 +69,16 @@ public abstract class AbstractFileStorage extends AbstractStorage {
     protected Resume[] getAll() {
         List<Resume> resumes = new ArrayList<>();
 
-        for (File file : directory.listFiles()) {
-            resumes.add(deserializeResume(file));
+        for (File file : listFilesSafe()) {
+            resumes.add(deserialize(file));
         }
 
-        return resumes.toArray(new Resume[resumes.size()]);
+        return resumes.toArray(new Resume[0]);
     }
 
     @Override
     public void clear() {
-        for (File file : directory.listFiles()) {
+        for (File file : listFilesSafe()) {
             if (!file.delete()) {
                 throw new StorageException("Unable to delete file", file.getName());
             }
@@ -85,10 +87,18 @@ public abstract class AbstractFileStorage extends AbstractStorage {
 
     @Override
     public int size() {
-        return directory.listFiles().length;
+        return listFilesSafe().length;
     }
 
-    protected abstract void serializeResume(Resume resume, File file);
+    abstract void serialize(Resume resume, File file);
 
-    protected abstract Resume deserializeResume(File file);
+    abstract Resume deserialize(File file);
+
+    private File[] listFilesSafe() {
+        File[] files = directory.listFiles();
+        if (files == null) {
+            throw new StorageException("Working directory is not a directory or IO error happened");
+        }
+        return files;
+    }
 }

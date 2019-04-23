@@ -5,13 +5,13 @@ import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class OrganizationEntry {
+public class Position {
     private final String position;
     private final String description;
     private final LocalDate start;
     private final LocalDate end;
 
-    public OrganizationEntry(String position, String description, LocalDate start, LocalDate end) {
+    public Position(String position, String description, LocalDate start, LocalDate end) {
         this.position = position;
         this.description = description;
         this.start = start;
@@ -42,7 +42,7 @@ public class OrganizationEntry {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrganizationEntry entry = (OrganizationEntry) o;
+        Position entry = (Position) o;
         return Objects.equals(position, entry.position) &&
                 Objects.equals(description, entry.description) &&
                 Objects.equals(start, entry.start) &&

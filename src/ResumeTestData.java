@@ -28,7 +28,7 @@ public class ResumeTestData {
                                         "YOTA",
                                         "https://www.yota.ru/",
                                         Arrays.asList(
-                                                new OrganizationEntry("lead specialist",
+                                                new Position("lead specialist",
                                                         "design and implementation of pay systems",
                                                         LocalDate.of(2008, 06, 01),
                                                         LocalDate.of(2010, 12, 01)
@@ -40,7 +40,7 @@ public class ResumeTestData {
                                         "LUXOFT",
                                         "https://www.luxoft.com/",
                                         Arrays.asList(
-                                                new OrganizationEntry(
+                                                new Position(
                                                         "lead developer",
                                                         "Deutsche Bank CRM",
                                                         LocalDate.of(2010, 12, 01),
@@ -58,7 +58,7 @@ public class ResumeTestData {
                                         "LUXOFT",
                                         "https://www.luxoft.com/",
                                         Arrays.asList(
-                                                new OrganizationEntry(
+                                                new Position(
                                                         null,
                                                         "OOP and UML",
                                                         LocalDate.of(2011, 03, 01),
@@ -70,7 +70,7 @@ public class ResumeTestData {
                                         "COURSERA",
                                         "https://www.coursera.org/",
                                         Arrays.asList(
-                                                new OrganizationEntry(
+                                                new Position(
                                                         null,
                                                         "functional programming in scala",
                                                         LocalDate.of(2013, 03, 01),
