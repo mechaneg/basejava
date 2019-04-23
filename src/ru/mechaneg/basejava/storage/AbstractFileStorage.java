@@ -66,14 +66,14 @@ public abstract class AbstractFileStorage extends AbstractStorage {
     }
 
     @Override
-    protected Resume[] getAll() {
+    protected List<Resume> getAll() {
         List<Resume> resumes = new ArrayList<>();
 
         for (File file : listFilesSafe()) {
             resumes.add(deserialize(file));
         }
 
-        return resumes.toArray(new Resume[0]);
+        return resumes;
     }
 
     @Override

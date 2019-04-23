@@ -4,6 +4,7 @@ import ru.mechaneg.basejava.exception.StorageOverflowException;
 import ru.mechaneg.basejava.model.Resume;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Array based storage for Resumes
@@ -58,8 +59,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         curSize = 0;
     }
 
-    protected Resume[] getAll() {
-        return Arrays.copyOf(storage, curSize);
+    @Override
+    protected List<Resume> getAll() {
+        return Arrays.asList(Arrays.copyOfRange(storage, 0, curSize));
     }
 
     @Override

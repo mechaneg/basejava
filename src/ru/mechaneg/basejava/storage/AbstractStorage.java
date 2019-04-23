@@ -4,7 +4,6 @@ import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public abstract class AbstractStorage implements IStorage {
 
     protected abstract boolean isSearchKeyExist(Object searchKey);
 
-    protected abstract Resume[] getAll();
+    protected abstract List<Resume> getAll();
 
     @Override
     public Resume get(String uuid) {
@@ -63,7 +62,7 @@ public abstract class AbstractStorage implements IStorage {
 
     @Override
     public List<Resume> getAllSorted() {
-        List<Resume> sortedResumes = Arrays.asList(getAll());
+        List<Resume> sortedResumes = getAll();
         sortedResumes.sort(FULLNAME_RESUME_CMP);
         return sortedResumes;
     }
