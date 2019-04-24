@@ -1,28 +1,20 @@
 import java.io.File;
 import java.util.Objects;
-import java.util.Stack;
 
 public class DisplayFiles {
 
     public static void main(String... args) {
         File projectRoot = new File(".");
+        displayFiles(projectRoot);
+    }
 
-        Stack<File> directoryStack = new Stack<>();
-        directoryStack.push(projectRoot);
-
-        while(!directoryStack.empty()) {
-            File currentDir = directoryStack.pop();
-
-            File[] files = currentDir.listFiles(file -> file.isFile() && !file.isHidden());
-
-            for (File file : Objects.requireNonNull(files)) {
+    private static void displayFiles(File directory) {
+        for (File file : Objects.requireNonNull(directory.listFiles())) {
+            if (file.isFile() && !file.isHidden()) {
                 System.out.println(file.getName());
             }
-
-            File[] dirs = currentDir.listFiles(file -> file.isDirectory() && !file.isHidden());
-
-            for (File dir : Objects.requireNonNull(dirs)) {
-                directoryStack.push(dir);
+            if (file.isDirectory() && !file.isHidden()) {
+                displayFiles(file);
             }
         }
     }
