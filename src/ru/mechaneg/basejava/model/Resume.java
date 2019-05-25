@@ -3,6 +3,7 @@ package ru.mechaneg.basejava.model;
 import ru.mechaneg.basejava.exception.ResumeContactNotExistException;
 import ru.mechaneg.basejava.exception.ResumeSectionNotExistException;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -10,7 +11,7 @@ import java.util.UUID;
 /**
  * Initial resume class
  */
-public class Resume {
+public class Resume implements Serializable {
 
     private String uuid;
     private String fullName;

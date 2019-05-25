@@ -1,9 +1,10 @@
 package ru.mechaneg.basejava.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class Organization {
+public class Organization implements Serializable {
 
     private final String company;
     private final String companyUrl;

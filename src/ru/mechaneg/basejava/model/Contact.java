@@ -1,8 +1,9 @@
 package ru.mechaneg.basejava.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Contact {
+public class Contact implements Serializable {
     private final String value;
 
     public Contact(String value) {

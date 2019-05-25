@@ -16,8 +16,8 @@ public abstract class AbstractPathStorage extends AbstractStorage {
 
     AbstractPathStorage(String directoryName) {
         directory = Paths.get(directoryName);
-        if (!Files.isDirectory(directory) || Files.isWritable(directory)) {
-            throw new IllegalArgumentException(directory + " is not a directory or is not writable");
+        if (!Files.isDirectory(directory)) {
+            throw new IllegalArgumentException(directory + " is not a directory");
         }
     }
 

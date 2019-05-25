@@ -14,6 +14,8 @@ import static org.junit.Assert.assertSame;
 
 public abstract class AbstractStorageTest {
 
+    protected static final String STORAGE_DIR = "/home/shapds/tmp/storage";
+
     private static final String UUID = "some uuid";
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
@@ -38,7 +40,7 @@ public abstract class AbstractStorageTest {
     @Test
     public void save() {
         storage.save(resume);
-        assertSame(resume, storage.get(UUID));
+        assertEquals(resume, storage.get(UUID));
         assertEquals(3, storage.size());
     }
 
@@ -49,7 +51,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void get() {
-        assertSame(resume1, storage.get(UUID_1));
+        assertEquals(resume1, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -87,7 +89,7 @@ public abstract class AbstractStorageTest {
         Resume current = new Resume(UUID_1, "dimon");
         storage.update(current);
 
-        assertSame(current, storage.get(UUID_1));
+        assertEquals(current, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)

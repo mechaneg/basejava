@@ -2,10 +2,11 @@ package ru.mechaneg.basejava.model;
 
 import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Position {
+public class Position implements Serializable {
     private final String position;
     private final String description;
     private final LocalDate start;
