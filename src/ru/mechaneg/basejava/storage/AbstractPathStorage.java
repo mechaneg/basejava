@@ -76,6 +76,24 @@ public abstract class AbstractPathStorage extends AbstractStorage {
         return resumes;
     }
 
+    @Override
+    public void clear() {
+        try {
+            Files.list(directory).forEach(this::deleteBySearchKey);
+        } catch (IOException ex) {
+            throw new StorageException("Error opening directory", directory.toString(), ex);
+        }
+    }
+
+    @Override
+    public int size() {
+        try {
+            return (int)Files.list(directory).count();
+        } catch (IOException ex) {
+            throw new StorageException("Error opening directory", directory.toString(), ex);
+        }
+    }
+
     abstract void serialize(Resume resume, OutputStream stream);
 
     abstract Resume deserialize(InputStream stream);
