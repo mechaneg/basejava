@@ -3,8 +3,7 @@ package ru.mechaneg.basejava.storage;
 import ru.mechaneg.basejava.exception.StorageException;
 import ru.mechaneg.basejava.model.Resume;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +29,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
 
     @Override
     protected Resume getBySearchKey(Object searchKey) {
-        return deserialize((File) searchKey);
+        return deserialize(createInputStream((File) searchKey));
     }
 
     @Override
@@ -44,7 +43,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
     @Override
     protected void updateBySearchKey(Object searchKey, Resume resume) {
         File file = (File) searchKey;
-        serialize(resume, file);
+        serialize(resume, createOutputStream(file));
     }
 
     @Override
@@ -57,7 +56,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
         } catch (IOException ex) {
             throw new StorageException("Unable to create a file", resume.getUuid(), ex);
         }
-        serialize(resume, file);
+        serialize(resume, createOutputStream(file));
     }
 
     @Override
@@ -70,7 +69,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
         List<Resume> resumes = new ArrayList<>();
 
         for (File file : checkForNull(directory.listFiles())) {
-            resumes.add(deserialize(file));
+            resumes.add(deserialize(createInputStream(file)));
         }
 
         return resumes;
@@ -90,14 +89,30 @@ public abstract class AbstractFileStorage extends AbstractStorage {
         return checkForNull(directory.listFiles()).length;
     }
 
-    abstract void serialize(Resume resume, File file);
+    abstract void serialize(Resume resume, OutputStream stream);
 
-    abstract Resume deserialize(File file);
+    abstract Resume deserialize(InputStream stream);
 
     private File[] checkForNull(File[] files) {
         if (files == null) {
             throw new StorageException("Working directory is not a directory or IO error happened");
         }
         return files;
+    }
+
+    private OutputStream createOutputStream(File file) {
+        try {
+            return new BufferedOutputStream(new FileOutputStream(file));
+        } catch (FileNotFoundException ex) {
+            throw new StorageException("Unable to find file", file.getName());
+        }
+    }
+
+    private InputStream createInputStream(File file) {
+        try {
+            return new BufferedInputStream(new FileInputStream(file));
+        } catch (FileNotFoundException ex) {
+            throw new StorageException("Unable to find file", file.getName());
+        }
     }
 }

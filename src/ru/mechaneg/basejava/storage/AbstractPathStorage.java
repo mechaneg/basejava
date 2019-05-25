@@ -3,7 +3,7 @@ package ru.mechaneg.basejava.storage;
 import ru.mechaneg.basejava.exception.StorageException;
 import ru.mechaneg.basejava.model.Resume;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +28,7 @@ public abstract class AbstractPathStorage extends AbstractStorage {
 
     @Override
     protected Resume getBySearchKey(Object searchKey) {
-        return deserialize((Path)searchKey);
+        return deserialize(createInputStream((Path)searchKey));
     }
 
     @Override
@@ -42,7 +42,7 @@ public abstract class AbstractPathStorage extends AbstractStorage {
 
     @Override
     protected void updateBySearchKey(Object searchKey, Resume resume) {
-        serialize(resume, (Path)searchKey);
+        serialize(resume, createOutputStream((Path)searchKey));
     }
 
     @Override
@@ -50,7 +50,7 @@ public abstract class AbstractPathStorage extends AbstractStorage {
 
         try {
             Path file = Files.createFile((Path)searchKey);
-            serialize(resume, file);
+            serialize(resume, createOutputStream(file));
         } catch (IOException ex) {
             throw new StorageException("Unable to create file", searchKey.toString(), ex);
         }
@@ -67,7 +67,7 @@ public abstract class AbstractPathStorage extends AbstractStorage {
 
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
             for (Path file : dirStream) {
-                resumes.add(deserialize(file));
+                resumes.add(deserialize(createInputStream(file)));
             }
         } catch (IOException ex) {
             throw new StorageException("Failed to list files in directory", directory.toString(), ex);
@@ -76,7 +76,23 @@ public abstract class AbstractPathStorage extends AbstractStorage {
         return resumes;
     }
 
-    abstract void serialize(Resume resume, Path file);
+    abstract void serialize(Resume resume, OutputStream stream);
 
-    abstract Resume deserialize(Path file);
+    abstract Resume deserialize(InputStream stream);
+
+    private OutputStream createOutputStream(Path file) {
+        try {
+            return Files.newOutputStream(file);
+        } catch (IOException ex) {
+            throw new StorageException("Failed to create output stream", file.toString(), ex);
+        }
+    }
+
+    private InputStream createInputStream(Path file) {
+        try {
+            return Files.newInputStream(file);
+        } catch (IOException ex) {
+            throw new StorageException("Failed to create input stream", file.toString(), ex);
+        }
+    }
 }
