@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Position implements Serializable {
-    private static final long serialVersionUID = -1101766174597098668L;
+    private static final long serialVersionUID = 1;
 
     private final String position;
     private final String description;

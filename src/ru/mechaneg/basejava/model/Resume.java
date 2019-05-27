@@ -12,7 +12,7 @@ import java.util.UUID;
  * Initial resume class
  */
 public class Resume implements Serializable {
-    private static final long serialVersionUID = -1440883135629955023L;
+    private static final long serialVersionUID = 1;
 
     private String uuid;
     private String fullName;
