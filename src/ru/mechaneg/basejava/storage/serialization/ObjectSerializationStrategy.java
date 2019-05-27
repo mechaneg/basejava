@@ -1,4 +1,4 @@
-package ru.mechaneg.basejava.storage;
+package ru.mechaneg.basejava.storage.serialization;
 
 import ru.mechaneg.basejava.exception.StorageException;
 import ru.mechaneg.basejava.model.Resume;
@@ -18,7 +18,7 @@ public class ObjectSerializationStrategy implements ISerializationStrategy {
     @Override
     public Resume deserialize(InputStream stream) {
         try (ObjectInputStream is = new ObjectInputStream(stream)) {
-            return (Resume)is.readObject();
+            return (Resume) is.readObject();
         } catch (IOException ex) {
             throw new StorageException("Unable to create object in stream", null, ex);
         } catch (ClassNotFoundException ex) {

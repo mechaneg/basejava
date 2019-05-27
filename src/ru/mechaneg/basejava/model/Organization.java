@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Organization implements Serializable {
+    private static final long serialVersionUID = 9118122191705948192L;
 
     private final String company;
     private final String companyUrl;

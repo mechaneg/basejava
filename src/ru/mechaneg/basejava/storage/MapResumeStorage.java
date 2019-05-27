@@ -17,12 +17,12 @@ public class MapResumeStorage extends AbstractStorage {
 
     @Override
     protected Resume getBySearchKey(Object searchKey) {
-        return (Resume)searchKey;
+        return (Resume) searchKey;
     }
 
     @Override
     protected void deleteBySearchKey(Object searchKey) {
-        storage.remove(((Resume)searchKey).getUuid());
+        storage.remove(((Resume) searchKey).getUuid());
     }
 
     @Override

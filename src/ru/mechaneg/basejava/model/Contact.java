@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Contact implements Serializable {
+    private static final long serialVersionUID = -8755221053452248832L;
+
     private final String value;
 
     public Contact(String value) {
