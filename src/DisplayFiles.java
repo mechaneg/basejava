@@ -10,12 +10,13 @@ public class DisplayFiles {
 
     private static void displayFiles(File rootDir, String blankPrefix) {
         System.out.println(blankPrefix + rootDir.getName() + ":");
-
-        for (File file : Objects.requireNonNull(rootDir.listFiles(file -> file.isFile() && !file.isHidden()))) {
-            System.out.println(blankPrefix + " -" + file.getName());
-        }
-        for (File dir : Objects.requireNonNull(rootDir.listFiles(file -> file.isDirectory() && !file.isHidden()))) {
-            displayFiles(dir, blankPrefix + "  ");
+        for (File file : Objects.requireNonNull(rootDir.listFiles())) {
+            if (file.isFile() && !file.isHidden()) {
+                System.out.println(blankPrefix + " -" + file.getName());
+            }
+            if (file.isDirectory() && !file.isHidden()) {
+                displayFiles(file, blankPrefix + "  ");
+            }
         }
     }
 }
