@@ -1,18 +1,25 @@
 package ru.mechaneg.basejava.model;
 
 import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
+import ru.mechaneg.basejava.util.DataSerializable;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Position implements Serializable {
+public class Position implements Serializable, DataSerializable {
     private static final long serialVersionUID = 1;
 
-    private final String position;
-    private final String description;
-    private final LocalDate start;
-    private final LocalDate end;
+    private String position;
+    private String description;
+    private LocalDate start;
+    private LocalDate end;
+
+    public Position() {
+    }
 
     public Position(String position, String description, LocalDate start, LocalDate end) {
         this.position = position;
@@ -55,5 +62,42 @@ public class Position implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(position, description, start, end);
+    }
+
+    @Override
+    public void write(DataOutputStream dos) throws IOException {
+        dos.writeUTF(position);
+        dos.writeUTF(description);
+
+        class DateWriter {
+            void write(LocalDate date, DataOutputStream dos) throws IOException {
+                dos.writeInt(date.getYear());
+                dos.writeInt(date.getMonthValue());
+                dos.writeInt(date.getDayOfMonth());
+            }
+        }
+
+        DateWriter dateWriter = new DateWriter();
+        dateWriter.write(start, dos);
+        dateWriter.write(end, dos);
+    }
+
+    @Override
+    public Position read(DataInputStream dis) throws IOException {
+
+        class DateReader {
+            LocalDate read(DataInputStream dis) throws IOException {
+                return LocalDate.of(dis.readInt(), dis.readInt(), dis.readInt());
+            }
+        }
+
+        DateReader dateReader = new DateReader();
+
+        return new Position(
+                dis.readUTF(),
+                dis.readUTF(),
+                dateReader.read(dis),
+                dateReader.read(dis)
+        );
     }
 }

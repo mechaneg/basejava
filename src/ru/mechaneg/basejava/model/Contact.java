@@ -1,12 +1,20 @@
 package ru.mechaneg.basejava.model;
 
+import ru.mechaneg.basejava.util.DataSerializable;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Contact implements Serializable {
+public class Contact implements Serializable, DataSerializable {
     private static final long serialVersionUID = 1;
 
-    private final String value;
+    private String value;
+
+    public Contact() {
+    }
 
     public Contact(String value) {
         this.value = value;
@@ -34,5 +42,15 @@ public class Contact implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    @Override
+    public void write(DataOutputStream dos) throws IOException {
+        dos.writeUTF(value);
+    }
+
+    @Override
+    public Contact read(DataInputStream dis) throws IOException {
+        return new Contact(dis.readUTF());
     }
 }
