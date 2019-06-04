@@ -10,7 +10,10 @@ import java.util.Objects;
 public class MarkedTextSection extends AbstractSection {
     private static final long serialVersionUID = 1;
 
-    private final List<String> items;
+    private List<String> items;
+
+    public MarkedTextSection() {
+    }
 
     public MarkedTextSection(List<String> items) {
         Objects.requireNonNull(items);

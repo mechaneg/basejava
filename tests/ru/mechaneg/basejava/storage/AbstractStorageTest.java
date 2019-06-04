@@ -4,8 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
-import ru.mechaneg.basejava.model.Resume;
+import ru.mechaneg.basejava.model.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +23,91 @@ public abstract class AbstractStorageTest {
     private final Resume resume = new Resume(UUID, "john");
     private final Resume resume1 = new Resume(UUID_1, "clint");
     private final Resume resume2 = new Resume(UUID_2, "briant");
+
+    {
+        // Contacts initialization
+        //
+        resume1.setContact(ContactType.TELEPHONE, new Contact("+7(921) 855-0482"));
+        resume1.setContact(ContactType.SKYPE, new Contact("grigory.kislin"));
+        resume1.setContact(ContactType.MAIL, new Contact("gkislin@yandex.ru"));
+        resume1.setContact(ContactType.LINKEDIN, new Contact("https://www.linkedin.com/in/gkislin/"));
+        resume1.setContact(ContactType.GITHUB, new Contact("https://github.com/gkislin"));
+        resume1.setContact(ContactType.STACKOVERFLOW, new Contact("https://stackoverflow.com/users/548473/gkislin"));
+        resume1.setContact(ContactType.HOMEPAGE, new Contact("http://gkislin.ru"));
+
+
+        // Sections initialization
+        //
+        resume1.setSection(SectionType.PERSONAL, new TextSection("creative guy with strong logic"));
+
+        resume1.setSection(SectionType.OBJECTIVE, new TextSection("java coach"));
+
+        resume1.setSection(SectionType.ACHIEVEMENT, new MarkedTextSection(
+                Arrays.asList("protocols realization", "java EE fault-tolerant framework")));
+
+        resume1.setSection(SectionType.QUALIFICATIONS, new MarkedTextSection(
+                Arrays.asList("java8, guava", "postgresql, redis", "git, svn")));
+
+        resume1.setSection(SectionType.EXPERIENCE, new OrganizationSection(
+                        Arrays.asList(
+                                new Organization(
+                                        "YOTA",
+                                        "https://www.yota.ru/",
+                                        Arrays.asList(
+                                                new Position("lead specialist",
+                                                        "design and implementation of pay systems",
+                                                        LocalDate.of(2008, 06, 01),
+                                                        LocalDate.of(2010, 12, 01)
+                                                )
+                                        )
+
+                                ),
+                                new Organization(
+                                        "LUXOFT",
+                                        "https://www.luxoft.com/",
+                                        Arrays.asList(
+                                                new Position(
+                                                        "lead developer",
+                                                        "Deutsche Bank CRM",
+                                                        LocalDate.of(2010, 12, 01),
+                                                        LocalDate.of(2012, 04, 01)
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+
+        resume1.setSection(SectionType.EDUCATION, new OrganizationSection(
+                        Arrays.asList(
+                                new Organization(
+                                        "LUXOFT",
+                                        "https://www.luxoft.com/",
+                                        Arrays.asList(
+                                                new Position(
+                                                        null,
+                                                        "OOP and UML",
+                                                        LocalDate.of(2011, 03, 01),
+                                                        LocalDate.of(2011, 04, 01)
+                                                )
+                                        )
+                                ),
+                                new Organization(
+                                        "COURSERA",
+                                        "https://www.coursera.org/",
+                                        Arrays.asList(
+                                                new Position(
+                                                        null,
+                                                        "functional programming in scala",
+                                                        LocalDate.of(2013, 03, 01),
+                                                        LocalDate.of(2013, 05, 01)
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+    }
 
     protected IStorage storage;
 

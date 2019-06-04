@@ -66,7 +66,12 @@ public class Position implements Serializable, DataSerializable {
 
     @Override
     public void write(DataOutputStream dos) throws IOException {
-        dos.writeUTF(position);
+        if (position == null) {
+            dos.writeBoolean(true);
+        } else {
+            dos.writeBoolean(false);
+            dos.writeUTF(position);
+        }
         dos.writeUTF(description);
 
         class DateWriter {
@@ -85,6 +90,13 @@ public class Position implements Serializable, DataSerializable {
     @Override
     public Position read(DataInputStream dis) throws IOException {
 
+        String position = null;
+        if (!dis.readBoolean()) {
+            position = dis.readUTF();
+        }
+
+        String description = dis.readUTF();
+
         class DateReader {
             LocalDate read(DataInputStream dis) throws IOException {
                 return LocalDate.of(dis.readInt(), dis.readInt(), dis.readInt());
@@ -94,8 +106,8 @@ public class Position implements Serializable, DataSerializable {
         DateReader dateReader = new DateReader();
 
         return new Position(
-                dis.readUTF(),
-                dis.readUTF(),
+                position,
+                description,
                 dateReader.read(dis),
                 dateReader.read(dis)
         );
