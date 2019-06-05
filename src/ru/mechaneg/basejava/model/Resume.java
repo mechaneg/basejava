@@ -1,23 +1,16 @@
 package ru.mechaneg.basejava.model;
 
 import ru.mechaneg.basejava.exception.ResumeContactNotExistException;
-import ru.mechaneg.basejava.exception.ResumeDeserializationError;
 import ru.mechaneg.basejava.exception.ResumeSectionNotExistException;
-import ru.mechaneg.basejava.util.DataSerializable;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.EnumMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Initial resume class
  */
-public class Resume implements Serializable, DataSerializable {
+public class Resume implements Serializable {
     private static final long serialVersionUID = 1;
 
     private String uuid;
@@ -107,54 +100,5 @@ public class Resume implements Serializable, DataSerializable {
     @Override
     public int hashCode() {
         return Objects.hash(uuid, fullName, contacts, sections);
-    }
-
-    @Override
-    public void write(DataOutputStream dos) throws IOException {
-
-        dos.writeUTF(uuid);
-        dos.writeUTF(fullName);
-
-        class EnumMapWriter {
-            <K extends Enum<K>, V extends DataSerializable>
-            void write(EnumMap<K, V> enumMap, DataOutputStream dos) throws IOException {
-                dos.writeInt(enumMap.size());
-                for (Map.Entry<K, V> entry : enumMap.entrySet()) {
-                    dos.writeUTF(entry.getKey().name());
-                    entry.getValue().write(dos);
-                }
-            }
-        }
-
-        EnumMapWriter enumMapWriter = new EnumMapWriter();
-        enumMapWriter.write(contacts, dos);
-        enumMapWriter.write(sections, dos);
-    }
-
-    @Override
-    public Resume read(DataInputStream dis) throws IOException {
-        Resume result = new Resume(dis.readUTF(), dis.readUTF());
-
-        Contact contactFactory = new Contact();
-
-        int contactsSize = dis.readInt();
-        for (int i = 0; i < contactsSize; i++) {
-            result.setContact(ContactType.valueOf(dis.readUTF()), contactFactory.read(dis));
-        }
-
-        try {
-            int sectionsSize = dis.readInt();
-            for (int i = 0; i < sectionsSize; i++) {
-                SectionType sectionType = SectionType.valueOf(dis.readUTF());
-                AbstractSection sectionFactory = (AbstractSection) Class.forName(dis.readUTF()).newInstance();
-                result.setSection(sectionType, sectionFactory.read(dis));
-            }
-
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            ex.printStackTrace();
-            throw new ResumeDeserializationError();
-        }
-
-        return result;
     }
 }
