@@ -7,7 +7,7 @@ import ru.mechaneg.basejava.model.Resume;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class AbstractStorage implements IStorage {
+public abstract class AbstractStorage<SK> implements IStorage {
 
     private static final Comparator<Resume> FULLNAME_UUID_RESUME_CMP =
             Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
@@ -15,17 +15,17 @@ public abstract class AbstractStorage implements IStorage {
     /**
      * Finds id of corresponding resume with this uuid.
      */
-    protected abstract Object findSearchKey(String uuid);
+    protected abstract SK findSearchKey(String uuid);
 
-    protected abstract Resume getBySearchKey(Object searchKey);
+    protected abstract Resume getBySearchKey(SK searchKey);
 
-    protected abstract void deleteBySearchKey(Object searchKey);
+    protected abstract void deleteBySearchKey(SK searchKey);
 
-    protected abstract void updateBySearchKey(Object searchKey, Resume resume);
+    protected abstract void updateBySearchKey(SK searchKey, Resume resume);
 
-    protected abstract void addNew(Object searchKey, Resume resume);
+    protected abstract void addNew(SK searchKey, Resume resume);
 
-    protected abstract boolean isSearchKeyExist(Object searchKey);
+    protected abstract boolean isSearchKeyExist(SK searchKey);
 
     protected abstract List<Resume> getAll();
 
@@ -46,7 +46,7 @@ public abstract class AbstractStorage implements IStorage {
             return;
         }
 
-        Object searchKey = findSearchKey(resume.getUuid());
+        SK searchKey = findSearchKey(resume.getUuid());
 
         if (isSearchKeyExist(searchKey)) {
             throw new ExistStorageException(resume.getUuid());
@@ -67,8 +67,8 @@ public abstract class AbstractStorage implements IStorage {
         return sortedResumes;
     }
 
-    private Object findSearchKeyAssertExists(String uuid) {
-        Object searchKey = findSearchKey(uuid);
+    private SK findSearchKeyAssertExists(String uuid) {
+        SK searchKey = findSearchKey(uuid);
         if (!isSearchKeyExist(searchKey)) {
             throw new NotExistStorageException(uuid);
         }

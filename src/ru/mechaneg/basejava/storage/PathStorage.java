@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PathStorage extends AbstractStorage {
+public class PathStorage extends AbstractStorage<Path> {
     private Path directory;
     private ISerializationStrategy serializationStrategy;
 
@@ -27,43 +27,42 @@ public class PathStorage extends AbstractStorage {
     }
 
     @Override
-    protected Object findSearchKey(String uuid) {
+    protected Path findSearchKey(String uuid) {
         return directory.resolve(uuid);
     }
 
     @Override
-    protected Resume getBySearchKey(Object searchKey) {
+    protected Resume getBySearchKey(Path searchKey) {
         try {
-            return serializationStrategy.deserialize(createInputStream((Path) searchKey));
+            return serializationStrategy.deserialize(createInputStream(searchKey));
         } catch (IOException ex) {
-            throw new StorageException("Path read error", ((Path)searchKey).toString(), ex);
+            throw new StorageException("Path read error", searchKey.toString(), ex);
         }
 
     }
 
     @Override
-    protected void deleteBySearchKey(Object searchKey) {
+    protected void deleteBySearchKey(Path searchKey) {
         try {
-            Files.deleteIfExists((Path) searchKey);
+            Files.deleteIfExists(searchKey);
         } catch (IOException ex) {
             throw new StorageException("Unable to delete file", searchKey.toString(), ex);
         }
     }
 
     @Override
-    protected void updateBySearchKey(Object searchKey, Resume resume) {
-        Path file = (Path) searchKey;
+    protected void updateBySearchKey(Path searchKey, Resume resume) {
         try {
-            serializationStrategy.serialize(resume, createOutputStream(file));
+            serializationStrategy.serialize(resume, createOutputStream(searchKey));
         } catch (IOException ex) {
-            throw new StorageException("File read error", file.toString(), ex);
+            throw new StorageException("File read error", searchKey.toString(), ex);
         }
     }
 
     @Override
-    protected void addNew(Object searchKey, Resume resume) {
+    protected void addNew(Path searchKey, Resume resume) {
         try {
-            Path file = Files.createFile((Path) searchKey);
+            Path file = Files.createFile(searchKey);
             updateBySearchKey(file, resume);
         } catch (IOException ex) {
             throw new StorageException("Unable to create file", searchKey.toString(), ex);
@@ -71,8 +70,8 @@ public class PathStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isSearchKeyExist(Object searchKey) {
-        return Files.isRegularFile((Path) searchKey);
+    protected boolean isSearchKeyExist(Path searchKey) {
+        return Files.isRegularFile(searchKey);
     }
 
     @Override

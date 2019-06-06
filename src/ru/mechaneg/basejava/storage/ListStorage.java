@@ -5,7 +5,7 @@ import ru.mechaneg.basejava.model.Resume;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListStorage extends AbstractStorage {
+public class ListStorage extends AbstractStorage<Integer> {
 
     private List<Resume> storage = new ArrayList<>();
 
@@ -20,28 +20,26 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected Resume getBySearchKey(Object searchKey) {
-        return storage.get((int) searchKey);
+    protected Resume getBySearchKey(Integer searchKey) {
+        return storage.get(searchKey);
     }
 
     @Override
-    protected void deleteBySearchKey(Object searchKey) {
-        storage.remove((int) searchKey);
+    protected void deleteBySearchKey(Integer searchKey) { storage.remove((int)searchKey); }
+
+    @Override
+    protected void updateBySearchKey(Integer searchKey, Resume resume) {
+        storage.set(searchKey, resume);
     }
 
     @Override
-    protected void updateBySearchKey(Object searchKey, Resume resume) {
-        storage.set((int) searchKey, resume);
-    }
-
-    @Override
-    protected void addNew(Object searchKey, Resume resume) {
+    protected void addNew(Integer searchKey, Resume resume) {
         storage.add(resume);
     }
 
     @Override
-    protected boolean isSearchKeyExist(Object searchKey) {
-        return (int) searchKey >= 0;
+    protected boolean isSearchKeyExist(Integer searchKey) {
+        return searchKey >= 0;
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class FileStorage extends AbstractStorage {
+public class FileStorage extends AbstractStorage<File> {
     private File directory;
     private ISerializationStrategy serializationStrategy;
 
@@ -27,42 +27,39 @@ public class FileStorage extends AbstractStorage {
     }
 
     @Override
-    protected Object findSearchKey(String uuid) {
+    protected File findSearchKey(String uuid) {
         return new File(directory, uuid);
     }
 
     @Override
-    protected Resume getBySearchKey(Object searchKey) {
+    protected Resume getBySearchKey(File searchKey) {
         try {
-            return serializationStrategy.deserialize(createInputStream((File) searchKey));
+            return serializationStrategy.deserialize(createInputStream(searchKey));
         } catch (IOException ex) {
-            throw new StorageException("File read error", ((File)searchKey).getName(), ex);
+            throw new StorageException("File read error", searchKey.getName(), ex);
         }
     }
 
     @Override
-    protected void deleteBySearchKey(Object searchKey) {
-        File file = (File) searchKey;
-        if (!file.delete()) {
-            throw new StorageException("Unable to delete file", file.getName());
+    protected void deleteBySearchKey(File searchKey) {
+        if (!searchKey.delete()) {
+            throw new StorageException("Unable to delete file", searchKey.getName());
         }
     }
 
     @Override
-    protected void updateBySearchKey(Object searchKey, Resume resume) {
-        File file = (File) searchKey;
+    protected void updateBySearchKey(File searchKey, Resume resume) {
         try {
-            serializationStrategy.serialize(resume, createOutputStream(file));
+            serializationStrategy.serialize(resume, createOutputStream(searchKey));
         } catch (IOException ex) {
-            throw new StorageException("File read error", file.getName(), ex);
+            throw new StorageException("File read error", searchKey.getName(), ex);
         }
     }
 
     @Override
-    protected void addNew(Object searchKey, Resume resume) {
-        File file = (File) searchKey;
+    protected void addNew(File searchKey, Resume resume) {
         try {
-            if (!file.createNewFile()) {
+            if (!searchKey.createNewFile()) {
                 throw new IOException("File already exists");
             }
         } catch (IOException ex) {
@@ -72,8 +69,8 @@ public class FileStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isSearchKeyExist(Object searchKey) {
-        return ((File) searchKey).exists();
+    protected boolean isSearchKeyExist(File searchKey) {
+        return searchKey.exists();
     }
 
     @Override
