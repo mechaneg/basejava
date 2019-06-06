@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class FileStorage extends AbstractSerializableStorage {
+public class FileStorage extends AbstractStorage {
     private File directory;
+    private ISerializationStrategy serializationStrategy;
 
     FileStorage(File directory, ISerializationStrategy serializationStrategy) {
-        super(serializationStrategy);
 
         Objects.requireNonNull(directory);
         if (!directory.isDirectory()) {
@@ -23,6 +23,7 @@ public class FileStorage extends AbstractSerializableStorage {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is forbidden for read/write");
         }
         this.directory = directory;
+        this.serializationStrategy = serializationStrategy;
     }
 
     @Override
@@ -32,7 +33,11 @@ public class FileStorage extends AbstractSerializableStorage {
 
     @Override
     protected Resume getBySearchKey(Object searchKey) {
-        return deserialize(createInputStream((File) searchKey));
+        try {
+            return serializationStrategy.deserialize(createInputStream((File) searchKey));
+        } catch (IOException ex) {
+            throw new StorageException("File read error", ((File)searchKey).getName(), ex);
+        }
     }
 
     @Override
@@ -46,7 +51,11 @@ public class FileStorage extends AbstractSerializableStorage {
     @Override
     protected void updateBySearchKey(Object searchKey, Resume resume) {
         File file = (File) searchKey;
-        serialize(resume, createOutputStream(file));
+        try {
+            serializationStrategy.serialize(resume, createOutputStream(file));
+        } catch (IOException ex) {
+            throw new StorageException("File read error", file.getName(), ex);
+        }
     }
 
     @Override
@@ -59,7 +68,7 @@ public class FileStorage extends AbstractSerializableStorage {
         } catch (IOException ex) {
             throw new StorageException("Unable to create a file", resume.getUuid(), ex);
         }
-        serialize(resume, createOutputStream(file));
+        updateBySearchKey(searchKey, resume);
     }
 
     @Override
@@ -72,7 +81,7 @@ public class FileStorage extends AbstractSerializableStorage {
         List<Resume> resumes = new ArrayList<>();
 
         for (File file : checkForNull(directory.listFiles())) {
-            resumes.add(deserialize(createInputStream(file)));
+            resumes.add(getBySearchKey(file));
         }
 
         return resumes;
@@ -81,9 +90,7 @@ public class FileStorage extends AbstractSerializableStorage {
     @Override
     public void clear() {
         for (File file : checkForNull(directory.listFiles())) {
-            if (!file.delete()) {
-                throw new StorageException("Unable to delete file", file.getName());
-            }
+            deleteBySearchKey(file);
         }
     }
 

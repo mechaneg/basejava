@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class DataStreamSerializationStrategy implements ISerializationStrategy {
     @Override
-    public void serialize(Resume resume, OutputStream stream) {
+    public void serialize(Resume resume, OutputStream stream) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(stream)) {
 
             dos.writeUTF(resume.getUuid());
@@ -46,8 +46,6 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
                 }
             }
 
-        } catch (IOException ex) {
-            throw new StorageException("Unable to create data output stream", resume.getUuid(), ex);
         }
     }
 
@@ -98,7 +96,7 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
     }
 
     @Override
-    public Resume deserialize(InputStream stream) {
+    public Resume deserialize(InputStream stream) throws IOException {
         try (DataInputStream dis = new DataInputStream(stream)) {
 
             String uuid = dis.readUTF();
@@ -131,8 +129,6 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
             }
 
             return resume;
-        } catch (IOException ex) {
-            throw new ResumeSerializationError("Unable to create data input stream", ex);
         }
     }
 

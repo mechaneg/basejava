@@ -7,23 +7,23 @@ import ru.mechaneg.basejava.storage.serialization.ISerializationStrategy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class PathStorage extends AbstractSerializableStorage {
+public class PathStorage extends AbstractStorage {
     private Path directory;
+    private ISerializationStrategy serializationStrategy;
 
     PathStorage(String directoryName, ISerializationStrategy serializationStrategy) {
-        super(serializationStrategy);
-
-        directory = Paths.get(directoryName);
+        this.directory = Paths.get(directoryName);
         if (!Files.isDirectory(directory)) {
             throw new IllegalArgumentException(directory + " is not a directory");
         }
+        this.serializationStrategy = serializationStrategy;
     }
 
     @Override
@@ -33,7 +33,12 @@ public class PathStorage extends AbstractSerializableStorage {
 
     @Override
     protected Resume getBySearchKey(Object searchKey) {
-        return deserialize(createInputStream((Path) searchKey));
+        try {
+            return serializationStrategy.deserialize(createInputStream((Path) searchKey));
+        } catch (IOException ex) {
+            throw new StorageException("Path read error", ((Path)searchKey).toString(), ex);
+        }
+
     }
 
     @Override
@@ -47,15 +52,19 @@ public class PathStorage extends AbstractSerializableStorage {
 
     @Override
     protected void updateBySearchKey(Object searchKey, Resume resume) {
-        serialize(resume, createOutputStream((Path) searchKey));
+        Path file = (Path) searchKey;
+        try {
+            serializationStrategy.serialize(resume, createOutputStream(file));
+        } catch (IOException ex) {
+            throw new StorageException("File read error", file.toString(), ex);
+        }
     }
 
     @Override
     protected void addNew(Object searchKey, Resume resume) {
-
         try {
             Path file = Files.createFile((Path) searchKey);
-            serialize(resume, createOutputStream(file));
+            updateBySearchKey(file, resume);
         } catch (IOException ex) {
             throw new StorageException("Unable to create file", searchKey.toString(), ex);
         }
@@ -63,40 +72,22 @@ public class PathStorage extends AbstractSerializableStorage {
 
     @Override
     protected boolean isSearchKeyExist(Object searchKey) {
-        return Files.exists((Path) searchKey);
+        return Files.isRegularFile((Path) searchKey);
     }
 
     @Override
     protected List<Resume> getAll() {
-        List<Resume> resumes = new ArrayList<>();
-
-        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
-            for (Path file : dirStream) {
-                resumes.add(deserialize(createInputStream(file)));
-            }
-        } catch (IOException ex) {
-            throw new StorageException("Failed to list files in directory", directory.toString(), ex);
-        }
-
-        return resumes;
+        return getDirectoryFilesStream().map(this::getBySearchKey).collect(Collectors.toList());
     }
 
     @Override
     public void clear() {
-        try {
-            Files.list(directory).forEach(this::deleteBySearchKey);
-        } catch (IOException ex) {
-            throw new StorageException("Error opening directory", directory.toString(), ex);
-        }
+        getDirectoryFilesStream().forEach(this::deleteBySearchKey);
     }
 
     @Override
     public int size() {
-        try {
-            return (int) Files.list(directory).count();
-        } catch (IOException ex) {
-            throw new StorageException("Error opening directory", directory.toString(), ex);
-        }
+        return (int) getDirectoryFilesStream().count();
     }
 
     private OutputStream createOutputStream(Path file) {
@@ -112,6 +103,14 @@ public class PathStorage extends AbstractSerializableStorage {
             return Files.newInputStream(file);
         } catch (IOException ex) {
             throw new StorageException("Failed to create input stream", file.toString(), ex);
+        }
+    }
+
+    private Stream<Path> getDirectoryFilesStream() {
+        try {
+            return Files.list(directory);
+        } catch (IOException ex) {
+            throw new StorageException("Error opening directory", directory.toString(), ex);
         }
     }
 }
