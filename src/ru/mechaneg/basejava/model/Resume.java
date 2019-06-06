@@ -4,6 +4,7 @@ import ru.mechaneg.basejava.exception.ResumeContactNotExistException;
 import ru.mechaneg.basejava.exception.ResumeSectionNotExistException;
 import java.io.Serializable;
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -15,8 +16,8 @@ public class Resume implements Serializable {
 
     private String uuid;
     private String fullName;
-    private EnumMap<ContactType, Contact> contacts = new EnumMap<>(ContactType.class);
-    private EnumMap<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
+    private Map<ContactType, Contact> contacts = new EnumMap<>(ContactType.class);
+    private Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
 
     public Resume() {
     }
@@ -57,7 +58,7 @@ public class Resume implements Serializable {
         contacts.put(type, contact);
     }
 
-    public EnumMap<ContactType, Contact> getContacts() {
+    public Map<ContactType, Contact> getContacts() {
         return contacts;
     }
 
@@ -72,7 +73,7 @@ public class Resume implements Serializable {
         sections.put(type, section);
     }
 
-    public EnumMap<SectionType, AbstractSection> getSections() {
+    public Map<SectionType, AbstractSection> getSections() {
         return sections;
     }
 

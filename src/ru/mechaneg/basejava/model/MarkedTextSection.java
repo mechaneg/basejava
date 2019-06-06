@@ -8,6 +8,9 @@ public class MarkedTextSection extends AbstractSection {
 
     private List<String> items;
 
+    public MarkedTextSection() {
+    }
+
     public MarkedTextSection(List<String> items) {
         Objects.requireNonNull(items);
         this.items = items;

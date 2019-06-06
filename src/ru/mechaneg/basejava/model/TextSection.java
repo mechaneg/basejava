@@ -7,6 +7,9 @@ public class TextSection extends AbstractSection {
 
     private String content;
 
+    public TextSection() {
+    }
+
     public TextSection(String content) {
         this.content = content;
     }
