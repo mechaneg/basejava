@@ -1,7 +1,6 @@
 package ru.mechaneg.basejava.storage.serialization;
 
 import ru.mechaneg.basejava.exception.ResumeSerializationError;
-import ru.mechaneg.basejava.exception.StorageException;
 import ru.mechaneg.basejava.model.*;
 
 import java.io.*;
@@ -33,24 +32,23 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
                 dos.writeUTF(entry.getKey().toString());
 
                 AbstractSection section = entry.getValue();
-                dos.writeUTF(section.getClass().getName());
 
-                if (section instanceof TextSection) {
-                    write((TextSection) section, dos);
-                } else if (section instanceof MarkedTextSection) {
-                    write((MarkedTextSection) section, dos);
-                } else if (section instanceof OrganizationSection) {
-                    write((OrganizationSection) section, dos);
-                } else {
-                    throw new ResumeSerializationError("Unexpected child of AbstractSection class");
+                switch (entry.getKey()) {
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        dos.writeUTF(((TextSection) section).getContent());
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        write((MarkedTextSection) section, dos);
+                        break;
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        write((OrganizationSection) section, dos);
                 }
             }
 
         }
-    }
-
-    private void write(TextSection section, DataOutputStream dos) throws IOException {
-        dos.writeUTF(section.getContent());
     }
 
     private void write(MarkedTextSection section, DataOutputStream dos) throws IOException {
@@ -64,7 +62,7 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
         dos.writeInt(section.getOrganizations().size());
         for (Organization org : section.getOrganizations()) {
             dos.writeUTF(org.getCompany());
-            dos.writeUTF(org.getCompanyUrl());
+            writeStringEmptyIfNull(org.getCompanyUrl(), dos);
 
             // Serialize positions
             //
@@ -76,15 +74,8 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
     }
 
     private void write(Position position, DataOutputStream dos) throws IOException {
-        if (position.getPosition() == null) {
-            dos.writeBoolean(false);
-        } else {
-            dos.writeBoolean(true);
-            dos.writeUTF(position.getPosition());
-        }
-
-        dos.writeUTF(position.getDescription());
-
+        writeStringEmptyIfNull(position.getTitle(), dos);
+        writeStringEmptyIfNull(position.getDescription(), dos);
         write(position.getStart(), dos);
         write(position.getEnd(), dos);
     }
@@ -93,6 +84,14 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
         dos.writeInt(date.getYear());
         dos.writeInt(date.getMonthValue());
         dos.writeInt(date.getDayOfMonth());
+    }
+
+    private void writeStringEmptyIfNull(String string, DataOutputStream dos) throws IOException {
+        if (string == null) {
+            dos.writeUTF("");
+        } else {
+            dos.writeUTF(string);
+        }
     }
 
     @Override
@@ -113,27 +112,23 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
             for (int i = 0; i < sectionsSize; i++) {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
 
-                AbstractSection section;
-                String sectionClassName = dis.readUTF();
-                if (sectionClassName.equals(TextSection.class.getName())) {
-                    section = readTextSection(dis);
-                } else if (sectionClassName.equals(MarkedTextSection.class.getName())) {
-                    section = readMarkedTextSection(dis);
-                } else if (sectionClassName.equals(OrganizationSection.class.getName())) {
-                    section = readOrganizationSection(dis);
-                } else {
-                    throw new ResumeSerializationError("Unknown child of AbstractSection");
+                switch (sectionType) {
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        resume.setSection(sectionType, new TextSection(dis.readUTF()));
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        resume.setSection(sectionType, readMarkedTextSection(dis));
+                        break;
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        resume.setSection(sectionType, readOrganizationSection(dis));
                 }
-
-                resume.setSection(sectionType, section);
             }
 
             return resume;
         }
-    }
-
-    private TextSection readTextSection(DataInputStream dis) throws IOException {
-        return new TextSection(dis.readUTF());
     }
 
     private MarkedTextSection readMarkedTextSection(DataInputStream dis) throws IOException {
@@ -159,7 +154,7 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
 
     private Organization readOrganization(DataInputStream dis) throws IOException {
         String company = dis.readUTF();
-        String companyUrl = dis.readUTF();
+        String companyUrl = readStringNullIfEmpty(dis);
 
         List<Position> positions = new ArrayList<>();
         int positionsSize = dis.readInt();
@@ -171,14 +166,9 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
     }
 
     private Position readPosition(DataInputStream dis) throws IOException {
-        String position = null;
-        if (dis.readBoolean()) {
-            position = dis.readUTF();
-        }
-
         return new Position(
-                position,
-                dis.readUTF(),
+                readStringNullIfEmpty(dis),
+                readStringNullIfEmpty(dis),
                 readDate(dis),
                 readDate(dis)
         );
@@ -186,5 +176,13 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
 
     private LocalDate readDate(DataInputStream dis) throws IOException {
         return LocalDate.of(dis.readInt(), dis.readInt(), dis.readInt());
+    }
+
+    private String readStringNullIfEmpty(DataInputStream dis) throws IOException {
+        String string = dis.readUTF();
+        if (string.equals("")) {
+            return null;
+        }
+        return string;
     }
 }

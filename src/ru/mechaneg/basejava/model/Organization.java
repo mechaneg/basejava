@@ -1,5 +1,8 @@
 package ru.mechaneg.basejava.model;
 
+import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
+import ru.mechaneg.basejava.exception.StorageException;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +18,12 @@ public class Organization implements Serializable {
         this.company = company;
         this.companyUrl = companyUrl;
         this.positions = positions;
+
+        Objects.requireNonNull(company);
+        Objects.requireNonNull(positions);
+        if (positions.isEmpty()) {
+            throw new StorageException("Positions shouldn't be empty");
+        }
     }
 
     public String getCompany() {

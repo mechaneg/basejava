@@ -8,24 +8,27 @@ import java.util.Objects;
 public class Position implements Serializable {
     private static final long serialVersionUID = 1;
 
-    private String position;
+    private String title;
     private String description;
     private LocalDate start;
     private LocalDate end;
 
-    public Position(String position, String description, LocalDate start, LocalDate end) {
-        this.position = position;
+    public Position(String title, String description, LocalDate start, LocalDate end) {
+        this.title = title;
         this.description = description;
         this.start = start;
         this.end = end;
+
+        Objects.requireNonNull(start);
+        Objects.requireNonNull(end);
 
         if (start.compareTo(end) >= 0) {
             throw new InconsistentDatePeriodException();
         }
     }
 
-    public String getPosition() {
-        return position;
+    public String getTitle() {
+        return title;
     }
 
     public String getDescription() {
@@ -36,16 +39,14 @@ public class Position implements Serializable {
         return start;
     }
 
-    public LocalDate getEnd() {
-        return end;
-    }
+    public LocalDate getEnd() { return end; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Position entry = (Position) o;
-        return Objects.equals(position, entry.position) &&
+        return Objects.equals(title, entry.title) &&
                 Objects.equals(description, entry.description) &&
                 Objects.equals(start, entry.start) &&
                 Objects.equals(end, entry.end);
@@ -53,6 +54,6 @@ public class Position implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, description, start, end);
+        return Objects.hash(title, description, start, end);
     }
 }
