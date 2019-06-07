@@ -6,8 +6,8 @@ import ru.mechaneg.basejava.model.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class DataStreamSerializationStrategy implements ISerializationStrategy {
     @Override
@@ -19,58 +19,59 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
 
             // Serializing contacts
             //
-            dos.writeInt(resume.getContacts().size());
-            for (Map.Entry<ContactType, Contact> entry : resume.getContacts().entrySet()) {
-                dos.writeUTF(entry.getKey().name());
-                dos.writeUTF(entry.getValue().getValue());
-            }
+            writeWithException(resume.getContacts().entrySet(), dos, (contact, dosContact) -> {
+                dosContact.writeUTF(contact.getKey().name());
+                dosContact.writeUTF(contact.getValue().getValue());
+            });
 
             // Serializing sections
             //
-            dos.writeInt(resume.getSections().size());
-            for (Map.Entry<SectionType, AbstractSection> entry : resume.getSections().entrySet()) {
-                dos.writeUTF(entry.getKey().toString());
+            writeWithException(resume.getSections().entrySet(), dos, (section, dosSection) -> {
+                dosSection.writeUTF(section.getKey().toString());
 
-                AbstractSection section = entry.getValue();
+                AbstractSection abstractSection = section.getValue();
 
-                switch (entry.getKey()) {
+                switch (section.getKey()) {
                     case PERSONAL:
                     case OBJECTIVE:
-                        dos.writeUTF(((TextSection) section).getContent());
+                        dosSection.writeUTF(((TextSection) abstractSection).getContent());
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        write((MarkedTextSection) section, dos);
+                        write((MarkedTextSection) abstractSection, dosSection);
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
-                        write((OrganizationSection) section, dos);
+                        write((OrganizationSection) abstractSection, dosSection);
                 }
-            }
+            });
+        }
+    }
 
+    @FunctionalInterface
+    private interface DataOutputStreamWriter<T> {
+        void accept(T t, DataOutputStream dos) throws IOException;
+    }
+
+    private <E> void writeWithException(Collection<E> collection, DataOutputStream dos, DataOutputStreamWriter<E> writer) throws IOException {
+        dos.writeInt(collection.size());
+        for (E element : collection) {
+            writer.accept(element, dos);
         }
     }
 
     private void write(MarkedTextSection section, DataOutputStream dos) throws IOException {
-        dos.writeInt(section.getItems().size());
-        for (String item : section.getItems()) {
-            dos.writeUTF(item);
-        }
+        writeWithException(section.getItems(), dos, (item, stream) -> stream.writeUTF(item));
     }
 
     private void write(OrganizationSection section, DataOutputStream dos) throws IOException {
-        dos.writeInt(section.getOrganizations().size());
-        for (Organization org : section.getOrganizations()) {
-            dos.writeUTF(org.getCompany());
-            writeStringEmptyIfNull(org.getCompanyUrl(), dos);
+        writeWithException(section.getOrganizations(), dos, (org, dosOrg) -> {
 
-            // Serialize positions
-            //
-            dos.writeInt(org.getPositions().size());
-            for (Position pos : org.getPositions()) {
-                write(pos, dos);
-            }
-        }
+            dosOrg.writeUTF(org.getCompany());
+            writeStringEmptyIfNull(org.getCompanyUrl(), dosOrg);
+
+            writeWithException(org.getPositions(), dosOrg, this::write);
+        });
     }
 
     private void write(Position position, DataOutputStream dos) throws IOException {
@@ -87,11 +88,7 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
     }
 
     private void writeStringEmptyIfNull(String string, DataOutputStream dos) throws IOException {
-        if (string == null) {
-            dos.writeUTF("");
-        } else {
-            dos.writeUTF(string);
-        }
+        dos.writeUTF(string == null ? "" : string);
     }
 
     @Override
@@ -132,37 +129,33 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
     }
 
     private MarkedTextSection readMarkedTextSection(DataInputStream dis) throws IOException {
-        int size = dis.readInt();
-
-        List<String> items = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            items.add(dis.readUTF());
-        }
-
-        return new MarkedTextSection(items);
+        return new MarkedTextSection(readListWithException(dis, DataInput::readUTF));
     }
 
     private OrganizationSection readOrganizationSection(DataInputStream dis) throws IOException {
-        int size = dis.readInt();
-        List<Organization> organizations = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            organizations.add(readOrganization(dis));
-        }
-
-        return new OrganizationSection(organizations);
+        return new OrganizationSection(readListWithException(dis, this::readOrganization));
     }
 
     private Organization readOrganization(DataInputStream dis) throws IOException {
-        String company = dis.readUTF();
-        String companyUrl = readStringNullIfEmpty(dis);
+        return new Organization(
+                dis.readUTF(),
+                readStringNullIfEmpty(dis),
+                readListWithException(dis, this::readPosition)
+        );
+    }
 
-        List<Position> positions = new ArrayList<>();
-        int positionsSize = dis.readInt();
-        for (int i = 0; i < positionsSize; i++) {
-            positions.add(readPosition(dis));
+    @FunctionalInterface
+    private interface DataInputStreamReader<T> {
+        T accept(DataInputStream dos) throws IOException;
+    }
+
+    private <T> List<T> readListWithException(DataInputStream dis, DataInputStreamReader<T> reader) throws IOException {
+        List<T> list = new ArrayList<>();
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            list.add(reader.accept(dis));
         }
-
-        return new Organization(company, companyUrl, positions);
+        return list;
     }
 
     private Position readPosition(DataInputStream dis) throws IOException {
