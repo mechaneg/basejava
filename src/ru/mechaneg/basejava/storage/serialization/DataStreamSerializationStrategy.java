@@ -19,30 +19,30 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
 
             // Serializing contacts
             //
-            writeWithException(resume.getContacts().entrySet(), dos, (contact, dosContact) -> {
-                dosContact.writeUTF(contact.getKey().name());
-                dosContact.writeUTF(contact.getValue().getValue());
+            writeWithException(resume.getContacts().entrySet(), dos, (contact) -> {
+                dos.writeUTF(contact.getKey().name());
+                dos.writeUTF(contact.getValue().getValue());
             });
 
             // Serializing sections
             //
-            writeWithException(resume.getSections().entrySet(), dos, (section, dosSection) -> {
-                dosSection.writeUTF(section.getKey().toString());
+            writeWithException(resume.getSections().entrySet(), dos, (section) -> {
+                dos.writeUTF(section.getKey().toString());
 
                 AbstractSection abstractSection = section.getValue();
 
                 switch (section.getKey()) {
                     case PERSONAL:
                     case OBJECTIVE:
-                        dosSection.writeUTF(((TextSection) abstractSection).getContent());
+                        dos.writeUTF(((TextSection) abstractSection).getContent());
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        write((MarkedTextSection) abstractSection, dosSection);
+                        write((MarkedTextSection) abstractSection, dos);
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
-                        write((OrganizationSection) abstractSection, dosSection);
+                        write((OrganizationSection) abstractSection, dos);
                 }
             });
         }
@@ -50,27 +50,27 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
 
     @FunctionalInterface
     private interface DataOutputStreamWriter<T> {
-        void accept(T t, DataOutputStream dos) throws IOException;
+        void accept(T t) throws IOException;
     }
 
     private <E> void writeWithException(Collection<E> collection, DataOutputStream dos, DataOutputStreamWriter<E> writer) throws IOException {
         dos.writeInt(collection.size());
         for (E element : collection) {
-            writer.accept(element, dos);
+            writer.accept(element);
         }
     }
 
     private void write(MarkedTextSection section, DataOutputStream dos) throws IOException {
-        writeWithException(section.getItems(), dos, (item, stream) -> stream.writeUTF(item));
+        writeWithException(section.getItems(), dos, dos::writeUTF);
     }
 
     private void write(OrganizationSection section, DataOutputStream dos) throws IOException {
-        writeWithException(section.getOrganizations(), dos, (org, dosOrg) -> {
+        writeWithException(section.getOrganizations(), dos, org -> {
 
-            dosOrg.writeUTF(org.getCompany());
-            writeStringEmptyIfNull(org.getCompanyUrl(), dosOrg);
+            dos.writeUTF(org.getCompany());
+            writeStringEmptyIfNull(org.getCompanyUrl(), dos);
 
-            writeWithException(org.getPositions(), dosOrg, this::write);
+            writeWithException(org.getPositions(), dos, pos -> write(pos, dos));
         });
     }
 
