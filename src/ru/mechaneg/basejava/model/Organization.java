@@ -3,16 +3,22 @@ package ru.mechaneg.basejava.model;
 import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
 import ru.mechaneg.basejava.exception.StorageException;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1;
 
     private String company;
     private String companyUrl;
     private List<Position> positions;
+
+    public Organization() {
+    }
 
     public Organization(String company, String companyUrl, List<Position> positions) {
         this.company = company;

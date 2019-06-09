@@ -1,17 +1,28 @@
 package ru.mechaneg.basejava.model;
 
 import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
+import ru.mechaneg.basejava.util.LocalDateXmlAdapter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Position implements Serializable {
     private static final long serialVersionUID = 1;
 
     private String title;
     private String description;
+    @XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
     private LocalDate start;
+    @XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
     private LocalDate end;
+
+    public Position() {
+    }
 
     public Position(String title, String description, LocalDate start, LocalDate end) {
         this.title = title;
