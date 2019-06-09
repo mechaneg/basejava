@@ -2,12 +2,12 @@ package ru.mechaneg.basejava.storage.serialization;
 
 import ru.mechaneg.basejava.exception.ResumeSerializationError;
 import ru.mechaneg.basejava.model.*;
+import ru.mechaneg.basejava.util.Pair;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataStreamSerializationStrategy implements ISerializationStrategy {
     @Override
@@ -98,62 +98,70 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
 
-            Resume resume = new Resume(uuid, fullName);
+            Map<ContactType, Contact> contacts = readListWithException(dis, () -> readTypedContact(dis))
+                    .stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-            int contactsSize = dis.readInt();
-            for (int i = 0; i < contactsSize; i++) {
-                resume.setContact(ContactType.valueOf(dis.readUTF()), new Contact(dis.readUTF()));
-            }
+            Map<SectionType, AbstractSection> sections = readListWithException(dis, () -> readTypedSection(dis))
+                    .stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-            int sectionsSize = dis.readInt();
-            for (int i = 0; i < sectionsSize; i++) {
-                SectionType sectionType = SectionType.valueOf(dis.readUTF());
-
-                switch (sectionType) {
-                    case PERSONAL:
-                    case OBJECTIVE:
-                        resume.setSection(sectionType, new TextSection(dis.readUTF()));
-                        break;
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        resume.setSection(sectionType, readMarkedTextSection(dis));
-                        break;
-                    case EXPERIENCE:
-                    case EDUCATION:
-                        resume.setSection(sectionType, readOrganizationSection(dis));
-                }
-            }
-
-            return resume;
+            return new Resume(uuid, fullName, contacts, sections);
         }
     }
 
     private MarkedTextSection readMarkedTextSection(DataInputStream dis) throws IOException {
-        return new MarkedTextSection(readListWithException(dis, DataInput::readUTF));
+        return new MarkedTextSection(readListWithException(dis, dis::readUTF));
     }
 
     private OrganizationSection readOrganizationSection(DataInputStream dis) throws IOException {
-        return new OrganizationSection(readListWithException(dis, this::readOrganization));
+        return new OrganizationSection(readListWithException(dis, () -> readOrganization(dis)));
     }
 
     private Organization readOrganization(DataInputStream dis) throws IOException {
         return new Organization(
                 dis.readUTF(),
                 readStringNullIfEmpty(dis),
-                readListWithException(dis, this::readPosition)
+                readListWithException(dis, () -> readPosition(dis))
         );
+    }
+
+    private Pair<ContactType, Contact> readTypedContact(DataInputStream dis) throws IOException {
+        return new Pair<>(ContactType.valueOf(dis.readUTF()), new Contact(dis.readUTF()));
+    }
+
+    private Pair<SectionType, AbstractSection> readTypedSection(DataInputStream dis) throws IOException {
+        SectionType sectionType = SectionType.valueOf(dis.readUTF());
+
+        AbstractSection section;
+        switch (sectionType) {
+            case PERSONAL:
+            case OBJECTIVE:
+                section = new TextSection(dis.readUTF());
+                break;
+            case ACHIEVEMENT:
+            case QUALIFICATIONS:
+                section = readMarkedTextSection(dis);
+                break;
+            case EXPERIENCE:
+            case EDUCATION:
+                section = readOrganizationSection(dis);
+                break;
+            default:
+                throw new ResumeSerializationError("Unknown section type" + sectionType);
+        }
+
+        return new Pair<>(sectionType, section);
     }
 
     @FunctionalInterface
     private interface DataInputStreamReader<T> {
-        T accept(DataInputStream dos) throws IOException;
+        T accept() throws IOException;
     }
 
     private <T> List<T> readListWithException(DataInputStream dis, DataInputStreamReader<T> reader) throws IOException {
         List<T> list = new ArrayList<>();
         int size = dis.readInt();
         for (int i = 0; i < size; i++) {
-            list.add(reader.accept(dis));
+            list.add(reader.accept());
         }
         return list;
     }
