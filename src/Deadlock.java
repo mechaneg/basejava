@@ -6,27 +6,36 @@ public class Deadlock {
         Object mutex2 = new Object();
 
         Thread thread1 = new Thread(() -> {
-            synchronized (mutex2) {
+            synchronized (mutex1) {
+                System.out.println("1st thread holding 1st mutex");
+
                 try {
-                    mutex2.wait();
+                    Thread.sleep(500);
                 } catch (InterruptedException ex) {
                 }
-            }
 
-            synchronized (mutex1) {
-                mutex1.notifyAll();
+                System.out.println("1st thread waiting for the 2nd mutex");
+
+                synchronized (mutex2) {
+                    System.out.println("1st thread holding 2nd mutex");
+                }
             }
         });
 
         Thread thread2 = new Thread(() -> {
-            synchronized (mutex1) {
+            synchronized (mutex2) {
+                System.out.println("2nd thread holding 2nd mutex");
+
                 try {
-                    mutex1.wait();
+                    Thread.sleep(500);
                 } catch (InterruptedException ex) {
                 }
-            }
-            synchronized (mutex2) {
-                mutex2.notifyAll();
+
+                System.out.println("2nd thread waiting for the 1st mutex");
+
+                synchronized (mutex1) {
+                    System.out.println("2nd thread holding 1st mutex");
+                }
             }
         });
 
