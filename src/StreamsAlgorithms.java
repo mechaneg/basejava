@@ -9,12 +9,7 @@ public class StreamsAlgorithms {
 
     public static List<Integer> oddOrEven(List<Integer> integers) {
         long oddNumber = integers.stream().filter(StreamsAlgorithms::isOdd).count();
-
-        if (isOdd(oddNumber)) {
-            return integers.stream().filter(StreamsAlgorithms::isEven).collect(Collectors.toList());
-        } else {
-            return integers.stream().filter(StreamsAlgorithms::isOdd).collect(Collectors.toList());
-        }
+        return integers.stream().filter(isOdd(oddNumber) ? StreamsAlgorithms::isEven : StreamsAlgorithms::isOdd).collect(Collectors.toList());
     }
 
     private static boolean isOdd(Integer val) {
