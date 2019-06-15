@@ -1,4 +1,4 @@
-@SuppressWarnings("ALL")
+
 public class Deadlock {
     public static void main(String... args) {
 
@@ -6,50 +6,34 @@ public class Deadlock {
         Object mutex2 = new Object();
 
         Thread thread1 = new Thread(() -> {
-            synchronized (mutex1) {
-                System.out.println("1st thread holding 1st mutex");
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException ex) {
-                }
-
-                System.out.println("1st thread waiting for the 2nd mutex");
-
-                synchronized (mutex2) {
-                    System.out.println("1st thread holding 2nd mutex");
-                }
-            }
+            lockMutexesSequentially(mutex1, mutex2);
         });
 
         Thread thread2 = new Thread(() -> {
-            synchronized (mutex2) {
-                System.out.println("2nd thread holding 2nd mutex");
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException ex) {
-                }
-
-                System.out.println("2nd thread waiting for the 1st mutex");
-
-                synchronized (mutex1) {
-                    System.out.println("2nd thread holding 1st mutex");
-                }
-            }
+            lockMutexesSequentially(mutex2, mutex1);
         });
 
         thread1.start();
         thread2.start();
 
-        try {
-            thread1.join();
-            thread2.join();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
-
-
         System.out.println("Unreachable");
+    }
+
+    private static void lockMutexesSequentially(Object firstMutex, Object secondMutex) {
+        String threadName = Thread.currentThread().getName();
+        synchronized (firstMutex) {
+            System.out.println(threadName + " holding " + firstMutex.toString() + " mutex");
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+            }
+
+            System.out.println(threadName + " waiting for the " + secondMutex.toString() + " mutex");
+
+            synchronized (secondMutex) {
+                System.out.println(threadName + " holding " + secondMutex.toString() + " mutex");
+            }
+        }
     }
 }
