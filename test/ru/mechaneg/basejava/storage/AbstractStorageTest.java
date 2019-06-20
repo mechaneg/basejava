@@ -5,6 +5,7 @@ import org.junit.Test;
 import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.*;
+import ru.mechaneg.basejava.util.Config;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -14,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractStorageTest {
 
-    protected static final String STORAGE_DIR = "/home/shapds/tmp/storage";
+    protected static final String STORAGE_DIR = Config.get().getStorageDir();
 
     private static final String UUID = "some uuid";
     private static final String UUID_1 = "uuid1";

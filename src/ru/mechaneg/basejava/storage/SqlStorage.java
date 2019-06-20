@@ -1,0 +1,135 @@
+package ru.mechaneg.basejava.storage;
+
+import ru.mechaneg.basejava.exception.ExistStorageException;
+import ru.mechaneg.basejava.exception.NotExistStorageException;
+import ru.mechaneg.basejava.model.Resume;
+import ru.mechaneg.basejava.sql.ConnectionFactory;
+import ru.mechaneg.basejava.sql.SqlQueryHelper;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class SqlStorage implements IStorage {
+    private final SqlQueryHelper queryHelper;
+
+    public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
+        this.queryHelper = new SqlQueryHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
+    }
+
+    @Override
+    public void clear() {
+        queryHelper.executeQuery(
+                "DELETE FROM resume",
+                query -> {},
+                (SqlQueryHelper.QueryConsumer) PreparedStatement::execute
+        );
+    }
+
+    @Override
+    public void save(Resume resume) {
+        queryHelper.executeQuery(
+                "INSERT INTO resume (uuid, full_name) VALUES (?, ?)",
+                query -> {
+                    query.setString(1, resume.getUuid());
+                    query.setString(2, resume.getFullName());
+                },
+                query -> {
+                    try {
+                        query.execute();
+                    } catch (SQLException ex) {
+                        if (ex.getSQLState().equals("23505")) {
+                            /*this state corresponds to duplicate key insertion*/
+                            throw new ExistStorageException(resume.getUuid());
+                        }
+                        throw ex;
+                    }
+                }
+        );
+    }
+
+    @Override
+    public Resume get(String uuid) {
+        return queryHelper.executeQuery(
+                "SELECT * FROM resume WHERE uuid = ?",
+                query -> {
+                    query.setString(1, uuid);
+                },
+                query -> {
+                    ResultSet resultQuery = query.executeQuery();
+                    if (!resultQuery.next()) {
+                        throw new NotExistStorageException(uuid);
+                    }
+
+                    return new Resume(uuid, resultQuery.getString("full_name"));
+                }
+        );
+    }
+
+    @Override
+    public void delete(String uuid) {
+        queryHelper.executeQuery(
+                "DELETE FROM resume WHERE uuid = ? RETURNING *",
+                query -> {
+                    query.setString(1, uuid);
+                },
+                query -> {
+                    ResultSet result = query.executeQuery();
+                    if (!result.next()) {
+                        throw new NotExistStorageException(uuid);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void update(Resume resume) {
+        queryHelper.executeQuery(
+                "UPDATE resume SET full_name = ? WHERE uuid = ? RETURNING *",
+                query -> {
+                    query.setString(1, resume.getFullName());
+                    query.setString(2, resume.getUuid());
+                },
+                query -> {
+                    ResultSet result = query.executeQuery();
+                    if (!result.next()) {
+                        throw new NotExistStorageException(resume.getUuid());
+                    }
+                }
+        );
+    }
+
+    @Override
+    public List<Resume> getAllSorted() {
+        return queryHelper.executeQuery(
+                "SELECT * FROM resume ORDER BY full_name, uuid",
+                query -> {},
+                query -> {
+                    ResultSet result = query.executeQuery();
+
+                    List<Resume> resumes = new ArrayList<>();
+                    while (result.next()) {
+                        resumes.add(new Resume(result.getString("uuid"), result.getString("full_name")));
+                    }
+                    return resumes;
+                }
+        );
+    }
+
+    @Override
+    public int size() {
+        return queryHelper.executeQuery(
+                "SELECT COUNT(*) FROM resume",
+                query -> {},
+                query -> {
+                    ResultSet result = query.executeQuery();
+
+                    if (!result.next()) {
+                        throw new IllegalStateException("Empty result of sql count");
+                    }
+
+                    return result.getInt(1);
+                }
+        );
+    }
+}
