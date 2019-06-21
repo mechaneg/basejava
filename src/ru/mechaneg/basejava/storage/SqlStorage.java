@@ -3,7 +3,6 @@ package ru.mechaneg.basejava.storage;
 import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
-import ru.mechaneg.basejava.sql.ConnectionFactory;
 import ru.mechaneg.basejava.sql.SqlQueryHelper;
 
 import java.sql.*;
@@ -21,8 +20,8 @@ public class SqlStorage implements IStorage {
     public void clear() {
         queryHelper.executeQuery(
                 "DELETE FROM resume",
-                query -> {},
-                (SqlQueryHelper.QueryConsumer) PreparedStatement::execute
+                query -> null,
+                PreparedStatement::execute
         );
     }
 
@@ -33,17 +32,11 @@ public class SqlStorage implements IStorage {
                 query -> {
                     query.setString(1, resume.getUuid());
                     query.setString(2, resume.getFullName());
+                    return null;
                 },
                 query -> {
-                    try {
-                        query.execute();
-                    } catch (SQLException ex) {
-                        if (ex.getSQLState().equals("23505")) {
-                            /*this state corresponds to duplicate key insertion*/
-                            throw new ExistStorageException(resume.getUuid());
-                        }
-                        throw ex;
-                    }
+                    query.execute();
+                    return null;
                 }
         );
     }
@@ -54,6 +47,7 @@ public class SqlStorage implements IStorage {
                 "SELECT * FROM resume WHERE uuid = ?",
                 query -> {
                     query.setString(1, uuid);
+                    return null;
                 },
                 query -> {
                     ResultSet resultQuery = query.executeQuery();
@@ -69,15 +63,16 @@ public class SqlStorage implements IStorage {
     @Override
     public void delete(String uuid) {
         queryHelper.executeQuery(
-                "DELETE FROM resume WHERE uuid = ? RETURNING *",
+                "DELETE FROM resume WHERE uuid = ?",
                 query -> {
                     query.setString(1, uuid);
+                    return null;
                 },
                 query -> {
-                    ResultSet result = query.executeQuery();
-                    if (!result.next()) {
+                    if (query.executeUpdate() == 0) {
                         throw new NotExistStorageException(uuid);
                     }
+                    return null;
                 }
         );
     }
@@ -85,16 +80,17 @@ public class SqlStorage implements IStorage {
     @Override
     public void update(Resume resume) {
         queryHelper.executeQuery(
-                "UPDATE resume SET full_name = ? WHERE uuid = ? RETURNING *",
+                "UPDATE resume SET full_name = ? WHERE uuid = ?",
                 query -> {
                     query.setString(1, resume.getFullName());
                     query.setString(2, resume.getUuid());
+                    return null;
                 },
                 query -> {
-                    ResultSet result = query.executeQuery();
-                    if (!result.next()) {
+                    if (query.executeUpdate() == 0) {
                         throw new NotExistStorageException(resume.getUuid());
                     }
+                    return null;
                 }
         );
     }
@@ -103,7 +99,7 @@ public class SqlStorage implements IStorage {
     public List<Resume> getAllSorted() {
         return queryHelper.executeQuery(
                 "SELECT * FROM resume ORDER BY full_name, uuid",
-                query -> {},
+                query -> null,
                 query -> {
                     ResultSet result = query.executeQuery();
 
@@ -120,7 +116,7 @@ public class SqlStorage implements IStorage {
     public int size() {
         return queryHelper.executeQuery(
                 "SELECT COUNT(*) FROM resume",
-                query -> {},
+                query -> null,
                 query -> {
                     ResultSet result = query.executeQuery();
 

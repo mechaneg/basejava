@@ -1,5 +1,7 @@
 package ru.mechaneg.basejava.sql;
 
+import ru.mechaneg.basejava.exception.ExistStorageException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -12,40 +14,23 @@ public class SqlQueryHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public void executeQuery(String queryMasked, QueryBuilder builder, QueryConsumer consumer) {
-        try (Connection conn = connectionFactory.getConnection()) {
-            try (PreparedStatement query = conn.prepareStatement(queryMasked)) {
-                builder.accept(query);
-                consumer.accept(query);
-            }
-        } catch (SQLException ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
-    public <T> T executeQuery(String queryMasked, QueryBuilder builder, QueryConsumerReturning<T> consumer) {
+    public <T> T executeQuery(String queryMasked, QueryProcessor<T> builder, QueryProcessor<T> consumer) {
         try (Connection conn = connectionFactory.getConnection()) {
             try (PreparedStatement query = conn.prepareStatement(queryMasked)) {
                 builder.accept(query);
                 return consumer.accept(query);
             }
         } catch (SQLException ex) {
+            if (ex.getSQLState().equals("23505")) {
+                /*this state corresponds to duplicate key insertion*/
+                throw new ExistStorageException(ex);
+            }
             throw new IllegalStateException(ex);
         }
     }
 
     @FunctionalInterface
-    public interface QueryBuilder {
-        void accept(PreparedStatement query) throws SQLException;
-    }
-
-    @FunctionalInterface
-    public interface QueryConsumer {
-        void accept(PreparedStatement query) throws SQLException;
-    }
-
-    @FunctionalInterface
-    public interface QueryConsumerReturning<T> {
+    public interface QueryProcessor<T> {
         T accept(PreparedStatement query) throws SQLException;
     }
 }
