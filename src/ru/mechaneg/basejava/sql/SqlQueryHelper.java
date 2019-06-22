@@ -14,10 +14,9 @@ public class SqlQueryHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <T> T executeQuery(String queryMasked, QueryProcessor<T> builder, QueryProcessor<T> consumer) {
+    public <T> T executeQuery(String queryMasked, QueryProcessor<T> consumer) {
         try (Connection conn = connectionFactory.getConnection()) {
             try (PreparedStatement query = conn.prepareStatement(queryMasked)) {
-                builder.accept(query);
                 return consumer.accept(query);
             }
         } catch (SQLException ex) {

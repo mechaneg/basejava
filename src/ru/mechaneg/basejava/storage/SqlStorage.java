@@ -21,7 +21,6 @@ public class SqlStorage implements IStorage {
     public void clear() {
         queryHelper.executeQuery(
                 "DELETE FROM resume",
-                query -> null,
                 PreparedStatement::execute
         );
     }
@@ -33,9 +32,6 @@ public class SqlStorage implements IStorage {
                 query -> {
                     query.setString(1, resume.getUuid());
                     query.setString(2, resume.getFullName());
-                    return null;
-                },
-                query -> {
                     query.execute();
                     return null;
                 }
@@ -48,9 +44,7 @@ public class SqlStorage implements IStorage {
                 "SELECT * FROM resume WHERE uuid = ?",
                 query -> {
                     query.setString(1, uuid);
-                    return null;
-                },
-                query -> {
+
                     ResultSet resultQuery = query.executeQuery();
                     if (!resultQuery.next()) {
                         throw new NotExistStorageException(uuid);
@@ -67,9 +61,7 @@ public class SqlStorage implements IStorage {
                 "DELETE FROM resume WHERE uuid = ?",
                 query -> {
                     query.setString(1, uuid);
-                    return null;
-                },
-                query -> {
+
                     if (query.executeUpdate() == 0) {
                         throw new NotExistStorageException(uuid);
                     }
@@ -85,9 +77,7 @@ public class SqlStorage implements IStorage {
                 query -> {
                     query.setString(1, resume.getFullName());
                     query.setString(2, resume.getUuid());
-                    return null;
-                },
-                query -> {
+
                     if (query.executeUpdate() == 0) {
                         throw new NotExistStorageException(resume.getUuid());
                     }
@@ -100,7 +90,6 @@ public class SqlStorage implements IStorage {
     public List<Resume> getAllSorted() {
         return queryHelper.executeQuery(
                 "SELECT * FROM resume ORDER BY full_name, uuid",
-                query -> null,
                 query -> {
                     ResultSet result = query.executeQuery();
 
@@ -117,7 +106,6 @@ public class SqlStorage implements IStorage {
     public int size() {
         return queryHelper.executeQuery(
                 "SELECT COUNT(*) FROM resume",
-                query -> null,
                 query -> {
                     ResultSet result = query.executeQuery();
 
