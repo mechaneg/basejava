@@ -1,11 +1,12 @@
 package ru.mechaneg.basejava.storage;
 
-import ru.mechaneg.basejava.exception.ExistStorageException;
 import ru.mechaneg.basejava.exception.NotExistStorageException;
 import ru.mechaneg.basejava.model.Resume;
 import ru.mechaneg.basejava.sql.SqlQueryHelper;
 
-import java.sql.*;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 

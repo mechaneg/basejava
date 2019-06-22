@@ -6,7 +6,10 @@ import ru.mechaneg.basejava.util.Pair;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DataStreamSerializationStrategy implements ISerializationStrategy {
@@ -46,11 +49,6 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
                 }
             });
         }
-    }
-
-    @FunctionalInterface
-    private interface DataOutputStreamWriter<T> {
-        void accept(T t) throws IOException;
     }
 
     private <E> void writeWithException(Collection<E> collection, DataOutputStream dos, DataOutputStreamWriter<E> writer) throws IOException {
@@ -152,11 +150,6 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
         return new Pair<>(sectionType, section);
     }
 
-    @FunctionalInterface
-    private interface DataInputStreamReader<T> {
-        T accept() throws IOException;
-    }
-
     private <T> List<T> readListWithException(DataInputStream dis, DataInputStreamReader<T> reader) throws IOException {
         List<T> list = new ArrayList<>();
         int size = dis.readInt();
@@ -185,5 +178,15 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
             return null;
         }
         return string;
+    }
+
+    @FunctionalInterface
+    private interface DataOutputStreamWriter<T> {
+        void accept(T t) throws IOException;
+    }
+
+    @FunctionalInterface
+    private interface DataInputStreamReader<T> {
+        T accept() throws IOException;
     }
 }

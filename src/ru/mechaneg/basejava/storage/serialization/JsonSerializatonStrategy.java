@@ -1,7 +1,7 @@
 package ru.mechaneg.basejava.storage.serialization;
 
-import ru.mechaneg.basejava.util.JsonParser;
 import ru.mechaneg.basejava.model.Resume;
+import ru.mechaneg.basejava.util.JsonParser;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
