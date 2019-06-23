@@ -29,10 +29,10 @@ public class SqlStorage implements IStorage {
     public void save(Resume resume) {
         queryHelper.executeQuery(
                 "INSERT INTO resume (uuid, full_name) VALUES (?, ?)",
-                query -> {
-                    query.setString(1, resume.getUuid());
-                    query.setString(2, resume.getFullName());
-                    query.execute();
+                ps -> {
+                    ps.setString(1, resume.getUuid());
+                    ps.setString(2, resume.getFullName());
+                    ps.execute();
                     return null;
                 }
         );
@@ -42,10 +42,10 @@ public class SqlStorage implements IStorage {
     public Resume get(String uuid) {
         return queryHelper.executeQuery(
                 "SELECT * FROM resume WHERE uuid = ?",
-                query -> {
-                    query.setString(1, uuid);
+                ps -> {
+                    ps.setString(1, uuid);
 
-                    ResultSet resultQuery = query.executeQuery();
+                    ResultSet resultQuery = ps.executeQuery();
                     if (!resultQuery.next()) {
                         throw new NotExistStorageException(uuid);
                     }
@@ -59,10 +59,10 @@ public class SqlStorage implements IStorage {
     public void delete(String uuid) {
         queryHelper.executeQuery(
                 "DELETE FROM resume WHERE uuid = ?",
-                query -> {
-                    query.setString(1, uuid);
+                ps -> {
+                    ps.setString(1, uuid);
 
-                    if (query.executeUpdate() == 0) {
+                    if (ps.executeUpdate() == 0) {
                         throw new NotExistStorageException(uuid);
                     }
                     return null;
@@ -74,11 +74,11 @@ public class SqlStorage implements IStorage {
     public void update(Resume resume) {
         queryHelper.executeQuery(
                 "UPDATE resume SET full_name = ? WHERE uuid = ?",
-                query -> {
-                    query.setString(1, resume.getFullName());
-                    query.setString(2, resume.getUuid());
+                ps -> {
+                    ps.setString(1, resume.getFullName());
+                    ps.setString(2, resume.getUuid());
 
-                    if (query.executeUpdate() == 0) {
+                    if (ps.executeUpdate() == 0) {
                         throw new NotExistStorageException(resume.getUuid());
                     }
                     return null;
@@ -90,8 +90,8 @@ public class SqlStorage implements IStorage {
     public List<Resume> getAllSorted() {
         return queryHelper.executeQuery(
                 "SELECT * FROM resume ORDER BY full_name, uuid",
-                query -> {
-                    ResultSet result = query.executeQuery();
+                ps -> {
+                    ResultSet result = ps.executeQuery();
 
                     List<Resume> resumes = new ArrayList<>();
                     while (result.next()) {
@@ -106,8 +106,8 @@ public class SqlStorage implements IStorage {
     public int size() {
         return queryHelper.executeQuery(
                 "SELECT COUNT(*) FROM resume",
-                query -> {
-                    ResultSet result = query.executeQuery();
+                ps -> {
+                    ResultSet result = ps.executeQuery();
 
                     if (!result.next()) {
                         throw new IllegalStateException("Empty result of sql count");

@@ -14,10 +14,10 @@ public class SqlQueryHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <T> T executeQuery(String queryMasked, QueryProcessor<T> consumer) {
+    public <T> T executeQuery(String queryMasked, PreparedStatementProcessor<T> consumer) {
         try (Connection conn = connectionFactory.getConnection()) {
-            try (PreparedStatement query = conn.prepareStatement(queryMasked)) {
-                return consumer.accept(query);
+            try (PreparedStatement ps = conn.prepareStatement(queryMasked)) {
+                return consumer.accept(ps);
             }
         } catch (SQLException ex) {
             if (ex.getSQLState().equals("23505")) {
@@ -26,10 +26,5 @@ public class SqlQueryHelper {
             }
             throw new IllegalStateException(ex);
         }
-    }
-
-    @FunctionalInterface
-    public interface QueryProcessor<T> {
-        T accept(PreparedStatement query) throws SQLException;
     }
 }
