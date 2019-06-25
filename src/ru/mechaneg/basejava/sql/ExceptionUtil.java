@@ -11,6 +11,6 @@ public class ExceptionUtil {
             /*this state corresponds to duplicate key insertion*/
             throw new ExistStorageException(ex);
         }
-        throw new IllegalStateException(ex);
+        throw new StorageException(ex);
     }
 }

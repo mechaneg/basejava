@@ -38,6 +38,5 @@ public class SqlQueryHelper {
         } catch (SQLException ex) {
             throw new StorageException(ex);
         }
-
     }
 }
