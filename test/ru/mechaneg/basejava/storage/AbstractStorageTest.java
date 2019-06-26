@@ -29,13 +29,13 @@ public abstract class AbstractStorageTest {
     {
         // Contacts initialization
         //
-        resume1.setContact(ContactType.TELEPHONE, new Contact("+7(921) 855-0482"));
-        resume1.setContact(ContactType.SKYPE, new Contact("grigory.kislin"));
-        resume1.setContact(ContactType.MAIL, new Contact("gkislin@yandex.ru"));
-        resume1.setContact(ContactType.LINKEDIN, new Contact("https://www.linkedin.com/in/gkislin/"));
-        resume1.setContact(ContactType.GITHUB, new Contact("https://github.com/gkislin"));
-        resume1.setContact(ContactType.STACKOVERFLOW, new Contact("https://stackoverflow.com/users/548473/gkislin"));
-        resume1.setContact(ContactType.HOMEPAGE, new Contact("http://gkislin.ru"));
+        resume1.setContact(ContactType.TELEPHONE, "+7(921) 855-0482");
+        resume1.setContact(ContactType.SKYPE, "grigory.kislin");
+        resume1.setContact(ContactType.MAIL, "gkislin@yandex.ru");
+        resume1.setContact(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin/");
+        resume1.setContact(ContactType.GITHUB, "https://github.com/gkislin");
+        resume1.setContact(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/548473/gkislin");
+        resume1.setContact(ContactType.HOMEPAGE, "http://gkislin.ru");
 
 
         // Sections initialization

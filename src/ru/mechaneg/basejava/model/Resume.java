@@ -19,7 +19,7 @@ public class Resume implements Serializable {
 
     private String uuid;
     private String fullName;
-    private Map<ContactType, Contact> contacts = new EnumMap<>(ContactType.class);
+    private Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
     private Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
 
     public Resume() {
@@ -37,7 +37,7 @@ public class Resume implements Serializable {
     public Resume(
             String uuid,
             String fullName,
-            Map<ContactType, Contact> contacts,
+            Map<ContactType, String> contacts,
             Map<SectionType, AbstractSection> sections) {
         this.uuid = uuid;
         this.fullName = fullName;
@@ -61,18 +61,18 @@ public class Resume implements Serializable {
         this.fullName = fullName;
     }
 
-    public Contact getContact(ContactType type) {
+    public String getContact(ContactType type) {
         if (contacts.containsKey(type)) {
             return contacts.get(type);
         }
         throw new ResumeContactNotExistException();
     }
 
-    public void setContact(ContactType type, Contact contact) {
+    public void setContact(ContactType type, String contact) {
         contacts.put(type, contact);
     }
 
-    public Map<ContactType, Contact> getContacts() {
+    public Map<ContactType, String> getContacts() {
         return contacts;
     }
 

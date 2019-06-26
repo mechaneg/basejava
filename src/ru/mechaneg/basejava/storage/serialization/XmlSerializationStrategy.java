@@ -11,7 +11,7 @@ public class XmlSerializationStrategy implements ISerializationStrategy {
     private XmlParser xmlParser;
 
     public XmlSerializationStrategy() {
-        xmlParser = new XmlParser(Resume.class, Organization.class, Position.class, Contact.class,
+        xmlParser = new XmlParser(Resume.class, Organization.class, Position.class,
                 OrganizationSection.class, MarkedTextSection.class, TextSection.class);
     }
 

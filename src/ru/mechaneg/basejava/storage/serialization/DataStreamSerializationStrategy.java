@@ -24,7 +24,7 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
             //
             writeWithException(resume.getContacts().entrySet(), dos, (contact) -> {
                 dos.writeUTF(contact.getKey().name());
-                dos.writeUTF(contact.getValue().getValue());
+                dos.writeUTF(contact.getValue());
             });
 
             // Serializing sections
@@ -96,7 +96,7 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
 
-            Map<ContactType, Contact> contacts = readListWithException(dis, () -> readTypedContact(dis))
+            Map<ContactType, String> contacts = readListWithException(dis, () -> readTypedContact(dis))
                     .stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
             Map<SectionType, AbstractSection> sections = readListWithException(dis, () -> readTypedSection(dis))
@@ -122,8 +122,8 @@ public class DataStreamSerializationStrategy implements ISerializationStrategy {
         );
     }
 
-    private Pair<ContactType, Contact> readTypedContact(DataInputStream dis) throws IOException {
-        return new Pair<>(ContactType.valueOf(dis.readUTF()), new Contact(dis.readUTF()));
+    private Pair<ContactType, String> readTypedContact(DataInputStream dis) throws IOException {
+        return new Pair<>(ContactType.valueOf(dis.readUTF()), dis.readUTF());
     }
 
     private Pair<SectionType, AbstractSection> readTypedSection(DataInputStream dis) throws IOException {

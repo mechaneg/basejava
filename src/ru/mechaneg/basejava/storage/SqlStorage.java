@@ -1,7 +1,6 @@
 package ru.mechaneg.basejava.storage;
 
 import ru.mechaneg.basejava.exception.NotExistStorageException;
-import ru.mechaneg.basejava.model.Contact;
 import ru.mechaneg.basejava.model.ContactType;
 import ru.mechaneg.basejava.model.Resume;
 import ru.mechaneg.basejava.sql.SqlQueryHelper;
@@ -64,7 +63,7 @@ public class SqlStorage implements IStorage {
                         if (resultQuery.getString("type") != null) {
                             resume.setContact(
                                     ContactType.valueOf(resultQuery.getString("type")),
-                                    new Contact(resultQuery.getString("value"))
+                                    resultQuery.getString("value")
                             );
                         }
                     } while (resultQuery.next());
@@ -141,7 +140,7 @@ public class SqlStorage implements IStorage {
 
                             resume.setContact(
                                     ContactType.valueOf(result.getString("type")),
-                                    new Contact(result.getString("value"))
+                                    result.getString("value")
                             );
                         }
                     }
@@ -169,9 +168,9 @@ public class SqlStorage implements IStorage {
 
     private void insertContacts(Connection conn, Resume resume) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contact (type, value, resume_uuid) VALUES (?, ?, ?)")) {
-            for (Map.Entry<ContactType, Contact> entry : resume.getContacts().entrySet()) {
+            for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
                 ps.setString(1, entry.getKey().toString());
-                ps.setString(2, entry.getValue().getValue());
+                ps.setString(2, entry.getValue());
                 ps.setString(3, resume.getUuid());
                 ps.addBatch();
             }
