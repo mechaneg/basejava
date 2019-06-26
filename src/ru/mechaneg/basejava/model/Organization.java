@@ -1,6 +1,5 @@
 package ru.mechaneg.basejava.model;
 
-import ru.mechaneg.basejava.exception.InconsistentDatePeriodException;
 import ru.mechaneg.basejava.exception.StorageException;
 
 import javax.xml.bind.annotation.XmlAccessType;

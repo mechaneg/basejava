@@ -5,13 +5,9 @@ import ru.mechaneg.basejava.model.Contact;
 import ru.mechaneg.basejava.model.ContactType;
 import ru.mechaneg.basejava.model.Resume;
 import ru.mechaneg.basejava.sql.SqlQueryHelper;
-import ru.mechaneg.basejava.util.Pair;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlStorage implements IStorage {
     private final SqlQueryHelper queryHelper;
@@ -37,11 +33,10 @@ public class SqlStorage implements IStorage {
                         ps.setString(2, resume.getFullName());
                         ps.execute();
                     }
-                    if (resume.getContacts().entrySet().isEmpty()) {
-                        return null;
-                    }
 
-                    insertContacts(conn, resume);
+                    if (!resume.getContacts().entrySet().isEmpty()) {
+                        insertContacts(conn, resume);
+                    }
 
                     return null;
                 }
@@ -121,55 +116,39 @@ public class SqlStorage implements IStorage {
 
     @Override
     public List<Resume> getAllSorted() {
-        List<Resume> resumes = queryHelper.executeQuery(
-                "SELECT * FROM resume ORDER BY full_name, uuid",
-                ps -> {
-                    ResultSet result = ps.executeQuery();
+        return queryHelper.transactionalExecute(
+                conn -> {
+                    Map<String, Resume> resumes = new HashMap<>();
 
-                    List<Resume> resumesNoContacts = new ArrayList<>();
-                    while (result.next()) {
-                        resumesNoContacts.add(new Resume(result.getString("uuid"), result.getString("full_name")));
-                    }
-                    return resumesNoContacts;
-                }
-        );
-
-        Map<String, List<Pair<ContactType, Contact>>> uuidToContacts = queryHelper.executeQuery(
-                "SELECT * FROM contact",
-                ps -> {
-                    ResultSet result = ps.executeQuery();
-
-                    Map<String, List<Pair<ContactType, Contact>>> contacts = new HashMap<>();
-                    while (result.next()) {
-                        String uuid = result.getString("resume_uuid");
-
-                        if (!contacts.containsKey(uuid)) {
-                            contacts.put(uuid, new ArrayList<>());
+                    try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM resume ORDER BY full_name, uuid")) {
+                        ResultSet result = ps.executeQuery();
+                        while (result.next()) {
+                            resumes.put(
+                                    result.getString("uuid"),
+                                    new Resume(result.getString("uuid"), result.getString("full_name"))
+                            );
                         }
-
-                        contacts.get(uuid).add(
-                                new Pair<>(
-                                        ContactType.valueOf(result.getString("type")),
-                                        new Contact(result.getString("value"))
-                                )
-                        );
                     }
-                    return contacts;
+
+                    try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact")) {
+                        ResultSet result = ps.executeQuery();
+
+                        while (result.next()) {
+                            String uuid = result.getString("resume_uuid");
+
+                            Resume resume = resumes.get(uuid);
+                            Objects.requireNonNull(resume);
+
+                            resume.setContact(
+                                    ContactType.valueOf(result.getString("type")),
+                                    new Contact(result.getString("value"))
+                            );
+                        }
+                    }
+
+                    return new ArrayList<>(resumes.values());
                 }
         );
-
-        for (Resume resume : resumes) {
-            List<Pair<ContactType, Contact>> contacts = uuidToContacts.get(resume.getUuid());
-            if (contacts == null) {
-                continue;
-            }
-
-            for (Pair<ContactType, Contact> typedContact: contacts) {
-                resume.setContact(typedContact.getFirst(), typedContact.getSecond());
-            }
-        }
-
-        return resumes;
     }
 
     @Override

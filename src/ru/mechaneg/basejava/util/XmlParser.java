@@ -30,7 +30,7 @@ public class XmlParser {
     @SuppressWarnings("unchecked")
     public <T> T unmarshall(Reader reader) {
         try {
-            return (T)unmarshaller.unmarshal(reader);
+            return (T) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
             throw new IllegalStateException(e);
         }

@@ -50,7 +50,9 @@ public class Position implements Serializable {
         return start;
     }
 
-    public LocalDate getEnd() { return end; }
+    public LocalDate getEnd() {
+        return end;
+    }
 
     @Override
     public boolean equals(Object o) {

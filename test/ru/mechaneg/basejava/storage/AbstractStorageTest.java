@@ -24,6 +24,7 @@ public abstract class AbstractStorageTest {
     private final Resume resume = new Resume(UUID, "john");
     private final Resume resume1 = new Resume(UUID_1, "clint");
     private final Resume resume2 = new Resume(UUID_2, "briant");
+    protected IStorage storage;
 
     {
         // Contacts initialization
@@ -109,8 +110,6 @@ public abstract class AbstractStorageTest {
                 )
         );
     }
-
-    protected IStorage storage;
 
     protected AbstractStorageTest(IStorage storage) {
         this.storage = storage;
