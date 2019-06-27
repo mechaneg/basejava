@@ -117,15 +117,15 @@ public class SqlStorage implements IStorage {
     public List<Resume> getAllSorted() {
         return queryHelper.transactionalExecute(
                 conn -> {
-                    List<Resume> resumes = new ArrayList<>();
-                    Map<String, Resume> resumesMap = new HashMap<>();
+                    Map<String, Resume> resumes = new LinkedHashMap<>();
 
                     try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM resume ORDER BY full_name, uuid")) {
                         ResultSet result = ps.executeQuery();
                         while (result.next()) {
-                            Resume resume = new Resume(result.getString("uuid"), result.getString("full_name"));
-                            resumes.add(resume);
-                            resumesMap.put(result.getString("uuid"), resume);
+                            resumes.put(
+                                    result.getString("uuid"),
+                                    new Resume(result.getString("uuid"), result.getString("full_name"))
+                            );
                         }
                     }
 
@@ -135,7 +135,7 @@ public class SqlStorage implements IStorage {
                         while (result.next()) {
                             String uuid = result.getString("resume_uuid");
 
-                            Resume resume = resumesMap.get(uuid);
+                            Resume resume = resumes.get(uuid);
                             Objects.requireNonNull(resume);
 
                             resume.setContact(
@@ -145,7 +145,7 @@ public class SqlStorage implements IStorage {
                         }
                     }
 
-                    return resumes;
+                    return new ArrayList<>(resumes.values());
                 }
         );
     }
