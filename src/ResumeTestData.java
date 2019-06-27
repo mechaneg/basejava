@@ -1,5 +1,3 @@
-import ru.mechaneg.basejava.exception.ResumeContactNotExistException;
-import ru.mechaneg.basejava.exception.ResumeSectionNotExistException;
 import ru.mechaneg.basejava.model.*;
 
 import java.time.LocalDate;
@@ -120,16 +118,7 @@ public class ResumeTestData {
         //
         Resume resInsonsitent = new Resume("Dmitry Shaposhnikov");
 
-        try {
-            resInsonsitent.getSection(SectionType.ACHIEVEMENT);
-        } catch (ResumeSectionNotExistException ex) {
-            System.out.println("\n" + SectionType.ACHIEVEMENT + " section doesn't exist");
-        }
-
-        try {
-            resInsonsitent.getContact(ContactType.SKYPE);
-        } catch (ResumeContactNotExistException ex) {
-            System.out.println("\n" + ContactType.SKYPE + " contact doesn't exist");
-        }
+        System.out.println(resInsonsitent.getSection(SectionType.ACHIEVEMENT));
+        System.out.println(resInsonsitent.getContact(ContactType.SKYPE));
     }
 }

@@ -1,8 +1,5 @@
 package ru.mechaneg.basejava.model;
 
-import ru.mechaneg.basejava.exception.ResumeContactNotExistException;
-import ru.mechaneg.basejava.exception.ResumeSectionNotExistException;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -62,10 +59,7 @@ public class Resume implements Serializable {
     }
 
     public String getContact(ContactType type) {
-        if (contacts.containsKey(type)) {
-            return contacts.get(type);
-        }
-        throw new ResumeContactNotExistException();
+        return contacts.get(type);
     }
 
     public void setContact(ContactType type, String contact) {
@@ -77,10 +71,7 @@ public class Resume implements Serializable {
     }
 
     public AbstractSection getSection(SectionType type) {
-        if (sections.containsKey(type)) {
-            return sections.get(type);
-        }
-        throw new ResumeSectionNotExistException();
+        return sections.get(type);
     }
 
     public void setSection(SectionType type, AbstractSection section) {
